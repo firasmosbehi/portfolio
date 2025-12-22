@@ -19,8 +19,71 @@
   }
 }
 
+* {
+  /* Improve touch scrolling on iOS */
+  -webkit-overflow-scrolling: touch;
+  /* Disable tap highlight on mobile */
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  /* Enable smooth scrolling */
+  scroll-behavior: smooth;
+  /* Prevent text size adjustment on orientation change */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+  /* Prevent overscroll bounce on iOS */
+  overscroll-behavior-y: none;
+  /* Optimize rendering for mobile */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  /* Improve touch responsiveness */
+  touch-action: manipulation;
+}
+
+/* Improve scrolling performance */
+@supports (scrollbar-width: thin) {
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(155, 155, 155, 0.5) transparent;
+  }
+}
+
+/* Optimize for mobile devices */
+@media (max-width: 1024px) {
+  body {
+    /* Allow natural scrolling on mobile */
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  /* Improve tap targets for mobile (minimum 44x44px recommended) */
+  a, button {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Optimize animations on mobile for better performance */
+  * {
+    animation-duration: 0.3s !important;
+    transition-duration: 0.3s !important;
+  }
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

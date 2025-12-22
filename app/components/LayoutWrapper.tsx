@@ -31,9 +31,12 @@ export default function LayoutWrapper({ children }: { children: React.ReactNode 
 
   useEffect(() => {
     // Check if device is mobile/tablet
-    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || window.innerWidth < 768;
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || window.innerWidth < 1024;
 
     const handleKeyDown = (e: KeyboardEvent) => {
+      // Disable keyboard navigation on mobile
+      if (isMobile) return;
+
       if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
         e.preventDefault();
         navigateToRoute(e.key === 'ArrowDown' ? 'down' : 'up');
@@ -57,16 +60,15 @@ export default function LayoutWrapper({ children }: { children: React.ReactNode 
       }, 50);
     };
 
-    window.addEventListener('keydown', handleKeyDown);
-
-    // Only add wheel listener on desktop
+    // Only add listeners on desktop
     if (!isMobile) {
+      window.addEventListener('keydown', handleKeyDown);
       window.addEventListener('wheel', handleWheel, { passive: true });
     }
 
     return () => {
-      window.removeEventListener('keydown', handleKeyDown);
       if (!isMobile) {
+        window.removeEventListener('keydown', handleKeyDown);
         window.removeEventListener('wheel', handleWheel);
       }
       if (wheelTimeout.current) {
@@ -76,9 +78,9 @@ export default function LayoutWrapper({ children }: { children: React.ReactNode 
   }, [pathname, isNavigating]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-zinc-50 to-white dark:from-zinc-950 dark:to-black md:overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-b from-zinc-50 to-white dark:from-zinc-950 dark:to-black lg:overflow-hidden overflow-y-auto">
       <Navigation />
-      <main>{children}</main>
+      <main className="relative">{children}</main>
       <Footer />
     </div>
   );

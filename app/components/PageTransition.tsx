@@ -16,9 +16,10 @@ export default function PageTransition({ children }: { children: React.ReactNode
 
   return (
     <div
-      className={`transition-all duration-500 ease-out ${
+      className={`transition-all duration-500 ease-out will-change-transform ${
         isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
       }`}
+      style={{ transform: 'translateZ(0)' }} // Hardware acceleration for mobile
     >
       {children}
     </div>

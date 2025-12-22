@@ -40,11 +40,12 @@ export default function AnimatedSection({ children, className = '', id }: Animat
     <section
       ref={sectionRef}
       id={id}
-      className={`${className} transition-all duration-1000 ease-out ${
+      className={`${className} transition-all duration-1000 ease-out will-change-transform ${
         isVisible
           ? 'opacity-100 translate-y-0'
           : 'opacity-0 translate-y-10'
       }`}
+      style={{ transform: 'translateZ(0)' }} // Hardware acceleration for mobile
     >
       {children}
     </section>
