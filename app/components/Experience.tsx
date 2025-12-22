@@ -3,25 +3,25 @@ import FadeInStagger from './FadeInStagger';
 
 export default function Experience() {
   return (
-    <AnimatedSection id="experience" className="w-full min-h-screen flex items-center justify-center py-24 px-6 snap-start">
+    <AnimatedSection className="w-full min-h-screen flex items-center justify-center py-20 sm:py-24 px-4 sm:px-6">
       <div className="w-full max-w-7xl mx-auto">
         <FadeInStagger delay={100}>
-          <h2 className="text-3xl md:text-4xl font-bold text-zinc-900 dark:text-zinc-100 mb-12">Experience</h2>
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-zinc-900 dark:text-zinc-100 mb-8 sm:mb-12">Experience</h2>
         </FadeInStagger>
 
-        <div className="space-y-12">
+        <div className="space-y-8 sm:space-y-12">
           {/* DevSecOps Engineer */}
           <FadeInStagger delay={300}>
-            <div className="border-l-4 border-blue-600 pl-6 hover:border-blue-500 transition-colors duration-300">
-            <div className="flex flex-col md:flex-row md:justify-between md:items-start mb-4">
+            <div className="border-l-4 border-blue-600 pl-4 sm:pl-6 hover:border-blue-500 transition-colors duration-300">
+            <div className="flex flex-col md:flex-row md:justify-between md:items-start mb-3 sm:mb-4">
               <div>
-                <h3 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">DevSecOps Engineer</h3>
-                <p className="text-lg text-blue-600 dark:text-blue-400 font-medium">The QA Company</p>
-                <p className="text-zinc-500 dark:text-zinc-500">Saint-Étienne, France</p>
+                <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-zinc-900 dark:text-zinc-100">DevSecOps Engineer</h3>
+                <p className="text-base sm:text-lg text-blue-600 dark:text-blue-400 font-medium">The QA Company</p>
+                <p className="text-sm sm:text-base text-zinc-500 dark:text-zinc-500">Saint-Étienne, France</p>
               </div>
-              <p className="text-zinc-600 dark:text-zinc-400 font-medium">02/2025 – Present</p>
+              <p className="text-sm sm:text-base text-zinc-600 dark:text-zinc-400 font-medium mt-2 md:mt-0">02/2025 – Present</p>
             </div>
-            <ul className="space-y-2 text-zinc-600 dark:text-zinc-400">
+            <ul className="space-y-2 text-sm sm:text-base text-zinc-600 dark:text-zinc-400">
               <li className="flex gap-2">
                 <span className="text-blue-600 dark:text-blue-400 mt-1.5">•</span>
                 <span>Designed and implemented secure DevOps practices integrating security testing into CI/CD pipelines, reducing vulnerabilities by implementing automated security scanning tools</span>
@@ -44,16 +44,16 @@ export default function Experience() {
 
           {/* DevOps Developer */}
           <FadeInStagger delay={500}>
-            <div className="border-l-4 border-cyan-600 pl-6 hover:border-cyan-500 transition-colors duration-300">
-            <div className="flex flex-col md:flex-row md:justify-between md:items-start mb-4">
+            <div className="border-l-4 border-cyan-600 pl-4 sm:pl-6 hover:border-cyan-500 transition-colors duration-300">
+            <div className="flex flex-col md:flex-row md:justify-between md:items-start mb-3 sm:mb-4">
               <div>
-                <h3 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">DevOps Developer</h3>
-                <p className="text-lg text-cyan-600 dark:text-cyan-400 font-medium">Nexaminds</p>
-                <p className="text-zinc-500 dark:text-zinc-500">Tunisia</p>
+                <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-zinc-900 dark:text-zinc-100">DevOps Developer</h3>
+                <p className="text-base sm:text-lg text-cyan-600 dark:text-cyan-400 font-medium">Nexaminds</p>
+                <p className="text-sm sm:text-base text-zinc-500 dark:text-zinc-500">Tunisia</p>
               </div>
-              <p className="text-zinc-600 dark:text-zinc-400 font-medium">09/2023 – 11/2024</p>
+              <p className="text-sm sm:text-base text-zinc-600 dark:text-zinc-400 font-medium mt-2 md:mt-0">09/2023 – 11/2024</p>
             </div>
-            <ul className="space-y-2 text-zinc-600 dark:text-zinc-400">
+            <ul className="space-y-2 text-sm sm:text-base text-zinc-600 dark:text-zinc-400">
               <li className="flex gap-2">
                 <span className="text-cyan-600 dark:text-cyan-400 mt-1.5">•</span>
                 <span>Developed and maintained CI/CD pipelines using GitLab CI, automating build, test, and deployment processes for microservices applications</span>

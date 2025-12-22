@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import LayoutWrapper from "./components/LayoutWrapper";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -13,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Firas Mosbehi - DevOps Engineer",
-  description: "Portfolio of Firas Mosbehi - DevOps Engineer with expertise in Kubernetes, AWS, CI/CD, and Infrastructure as Code",
+  title: "Firas Mosbehi - DevSecOps Engineer",
+  description: "Portfolio of Firas Mosbehi - DevSecOps Engineer with expertise in Kubernetes, AWS, CI/CD, and Infrastructure as Code",
 };
 
 export default function RootLayout({
@@ -27,7 +28,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        <LayoutWrapper>{children}</LayoutWrapper>
       </body>
     </html>
   );

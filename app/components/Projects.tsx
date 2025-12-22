@@ -3,18 +3,18 @@ import FadeInStagger from './FadeInStagger';
 
 export default function Projects() {
   return (
-    <AnimatedSection id="projects" className="w-full min-h-screen flex items-center justify-center py-28 px-6 bg-white dark:bg-zinc-900 snap-start">
+    <AnimatedSection className="w-full min-h-screen flex items-center justify-center py-20 sm:py-28 px-4 sm:px-6 bg-white dark:bg-zinc-900">
       <div className="w-full max-w-7xl mx-auto">
         <FadeInStagger delay={100}>
-          <h2 className="text-3xl md:text-4xl font-bold text-zinc-900 dark:text-zinc-100 mb-12">Featured Projects</h2>
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-zinc-900 dark:text-zinc-100 mb-8 sm:mb-12">Featured Projects</h2>
         </FadeInStagger>
 
-        <div className="grid md:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
           {/* Kubernetes Taskboard Platform */}
           <FadeInStagger delay={200}>
-            <div className="border border-zinc-200 dark:border-zinc-800 rounded-lg p-6 hover:border-blue-600 dark:hover:border-blue-400 hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
-            <h3 className="text-xl font-bold text-zinc-900 dark:text-zinc-100 mb-4">Kubernetes Taskboard Platform</h3>
-            <ul className="space-y-2 text-zinc-600 dark:text-zinc-400 mb-4">
+            <div className="border border-zinc-200 dark:border-zinc-800 rounded-lg p-4 sm:p-6 hover:border-blue-600 dark:hover:border-blue-400 hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
+            <h3 className="text-lg sm:text-xl font-bold text-zinc-900 dark:text-zinc-100 mb-3 sm:mb-4">Kubernetes Taskboard Platform</h3>
+            <ul className="space-y-2 text-sm sm:text-base text-zinc-600 dark:text-zinc-400 mb-4">
               <li className="flex gap-2">
                 <span className="text-blue-600 dark:text-blue-400 mt-1.5">•</span>
                 <span>Deployed production-ready Kubernetes platform on AWS EKS with comprehensive observability stack</span>
@@ -39,9 +39,9 @@ export default function Projects() {
 
           {/* Automated EC2 Deployment Pipeline */}
           <FadeInStagger delay={300}>
-            <div className="border border-zinc-200 dark:border-zinc-800 rounded-lg p-6 hover:border-cyan-600 dark:hover:border-cyan-400 hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
-            <h3 className="text-xl font-bold text-zinc-900 dark:text-zinc-100 mb-4">Automated EC2 Deployment Pipeline</h3>
-            <ul className="space-y-2 text-zinc-600 dark:text-zinc-400 mb-4">
+            <div className="border border-zinc-200 dark:border-zinc-800 rounded-lg p-4 sm:p-6 hover:border-cyan-600 dark:hover:border-cyan-400 hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
+            <h3 className="text-lg sm:text-xl font-bold text-zinc-900 dark:text-zinc-100 mb-3 sm:mb-4">Automated EC2 Deployment Pipeline</h3>
+            <ul className="space-y-2 text-sm sm:text-base text-zinc-600 dark:text-zinc-400 mb-4">
               <li className="flex gap-2">
                 <span className="text-cyan-600 dark:text-cyan-400 mt-1.5">•</span>
                 <span>Built automated deployment pipeline combining Terraform and Ansible on AWS EC2</span>
@@ -66,9 +66,9 @@ export default function Projects() {
 
           {/* Task-Board with Full Observability Stack */}
           <FadeInStagger delay={400}>
-            <div className="border border-zinc-200 dark:border-zinc-800 rounded-lg p-6 hover:border-blue-600 dark:hover:border-blue-400 hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
-            <h3 className="text-xl font-bold text-zinc-900 dark:text-zinc-100 mb-4">Task-Board with Full Observability Stack</h3>
-            <ul className="space-y-2 text-zinc-600 dark:text-zinc-400 mb-4">
+            <div className="border border-zinc-200 dark:border-zinc-800 rounded-lg p-4 sm:p-6 hover:border-blue-600 dark:hover:border-blue-400 hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
+            <h3 className="text-lg sm:text-xl font-bold text-zinc-900 dark:text-zinc-100 mb-3 sm:mb-4">Task-Board with Full Observability Stack</h3>
+            <ul className="space-y-2 text-sm sm:text-base text-zinc-600 dark:text-zinc-400 mb-4">
               <li className="flex gap-2">
                 <span className="text-blue-600 dark:text-blue-400 mt-1.5">•</span>
                 <span>Developed full-stack application with React frontend and Go backend</span>
@@ -93,9 +93,9 @@ export default function Projects() {
 
           {/* Optimized Dockerfiles Repository */}
           <FadeInStagger delay={500}>
-            <div className="border border-zinc-200 dark:border-zinc-800 rounded-lg p-6 hover:border-cyan-600 dark:hover:border-cyan-400 hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
-            <h3 className="text-xl font-bold text-zinc-900 dark:text-zinc-100 mb-4">Optimized Dockerfiles Repository</h3>
-            <ul className="space-y-2 text-zinc-600 dark:text-zinc-400 mb-4">
+            <div className="border border-zinc-200 dark:border-zinc-800 rounded-lg p-4 sm:p-6 hover:border-cyan-600 dark:hover:border-cyan-400 hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
+            <h3 className="text-lg sm:text-xl font-bold text-zinc-900 dark:text-zinc-100 mb-3 sm:mb-4">Optimized Dockerfiles Repository</h3>
+            <ul className="space-y-2 text-sm sm:text-base text-zinc-600 dark:text-zinc-400 mb-4">
               <li className="flex gap-2">
                 <span className="text-cyan-600 dark:text-cyan-400 mt-1.5">•</span>
                 <span>Created production-ready optimized Dockerfiles for popular frameworks</span>
