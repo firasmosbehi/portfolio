@@ -1,0 +1,154 @@
+---
+title: "GitOps with ArgoCD: A Practical Guide"
+description: "A hands-on guide to implementing GitOps on Kubernetes using ArgoCD, from first application to production patterns."
+date: "2025-12-21"
+tags: ["kubernetes", "argocd", "gitops", "cicd", "terraform"]
+---
+
+# GitOps with ArgoCD: A Practical Guide
+
+GitOps has become the default operating model for Kubernetes deployments. At its core, GitOps means using Git as the single source of truth for infrastructure and application configuration. ArgoCD is the most popular tool for implementing GitOps on Kubernetes.
+
+## What Is GitOps?
+
+GitOps has four core principles:
+
+1. **Declarative configuration** — Everything is described in files
+2. **Versioned and immutable** — Git history provides auditability
+3. **Pulled automatically** — Software agents continuously reconcile state
+4. **Continuously reconciled** — Drift is detected and corrected
+
+## Installing ArgoCD
+
+The simplest way to get started is with the official manifests:
+
+```bash
+kubectl create namespace argocd
+kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+```
+
+For production, I prefer a GitOps-managed ArgoCD installation using Helm:
+
+```yaml
+# argocd/values.yaml
+server:
+  service:
+    type: LoadBalancer
+  ingress:
+    enabled: true
+    hostname: argocd.example.com
+
+dex:
+  enabled: false
+```
+
+## Your First Application
+
+Create an `Application` resource that points to a Git repository:
+
+```yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: guestbook
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/argoproj/argocd-example-apps.git
+    targetRevision: HEAD
+    path: guestbook
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+```
+
+Apply it:
+
+```bash
+kubectl apply -f application.yaml
+```
+
+ArgoCD will now watch the repository and sync changes automatically.
+
+## Production Patterns
+
+### App of Apps
+
+Manage multiple applications with a parent Application:
+
+```yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: apps
+spec:
+  source:
+    path: apps
+    directory:
+      recurse: true
+```
+
+### ApplicationSets
+
+For multi-tenant or multi-environment setups, ApplicationSets generate Applications dynamically:
+
+```yaml
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: microservices
+spec:
+  generators:
+    - list:
+        elements:
+          - name: api
+            namespace: production
+          - name: worker
+            namespace: production
+  template:
+    spec:
+      source:
+        repoURL: https://github.com/org/gitops.git
+        path: 'services/{{name}}'
+```
+
+### Secrets Management
+
+Never commit secrets to Git. I use External Secrets Operator with AWS Secrets Manager:
+
+```yaml
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
+metadata:
+  name: database-credentials
+spec:
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: aws-secrets-manager
+  target:
+    name: database-credentials
+  data:
+    - secretKey: password
+      remoteRef:
+        key: prod/database
+        property: password
+```
+
+## Monitoring Sync Health
+
+Set up Prometheus alerts for:
+
+- `argocd_app_info{sync_status="OutOfSync"}` — drift detected
+- `argocd_app_info{health_status!="Healthy"}` — application unhealthy
+- High sync failure rates
+
+## Final Thoughts
+
+ArgoCD transformed how I think about Kubernetes operations. The shift from imperative `kubectl apply` workflows to declarative Git-backed reconciliation reduces risk, improves auditability, and makes rollbacks as simple as `git revert`.
+
+Start small with one application, then scale the pattern across your fleet.

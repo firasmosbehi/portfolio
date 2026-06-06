@@ -1,0 +1,71 @@
+---
+title: "Building a Jenkins MCP Server: Lessons from 25+ Tools"
+description: "What I learned building a comprehensive Model Context Protocol server that lets AI agents orchestrate Jenkins CI/CD pipelines."
+date: "2026-06-03"
+tags: ["jenkins", "mcp", "typescript", "ai", "cicd"]
+---
+
+# Building a Jenkins MCP Server: Lessons from 25+ Tools
+
+The Model Context Protocol (MCP) is emerging as the standard way for AI assistants to interact with external tools. When I set out to build a Jenkins MCP server, I wanted to see how far I could push the protocol in a real-world CI/CD environment.
+
+## Why Jenkins + MCP?
+
+Jenkins remains one of the most widely used CI/CD platforms in enterprise environments. Despite the rise of cloud-native alternatives, thousands of organizations still rely on Jenkins pipelines for critical build and deployment workflows. The problem? Interacting with Jenkins through a UI or raw API can be cumbersome, especially for developers who just want quick answers.
+
+An MCP server bridges this gap by letting AI agents:
+
+- Query job statuses in natural language
+- Trigger builds and deployments
+- Analyze console logs for failures
+- Manage credentials and nodes
+- Generate pipeline code
+
+## Architecture Decisions
+
+### Dual Transport Support
+
+MCP supports multiple transports. I implemented both **stdio** and **SSE** (Server-Sent Events) to support different integration patterns:
+
+```typescript
+// stdio transport — ideal for local CLI usage
+const transport = new StdioServerTransport();
+server.connect(transport);
+
+// SSE transport — for remote/web integrations
+const sseTransport = new SSEServerTransport('/messages', res);
+sseTransport.onMessage = ...
+```
+
+### Tool Design Philosophy
+
+With 25+ tools, it was tempting to expose every Jenkins API endpoint. Instead, I focused on **composability**: each tool does one thing well, and complex workflows emerge from combining them.
+
+Some of my favorite tools:
+
+- `get_job_status` — quick health check
+- `search_build_logs` — find specific errors across builds
+- `suggest_pipeline_fix` — uses log context to recommend fixes
+- `list_plugins` — audit installed plugins and versions
+- `trigger_parameterized_build` — start builds with parameters
+
+### Error Handling
+
+Jenkins APIs are notorious for inconsistent error responses. I wrapped every API call in a structured error handler that returns actionable messages to the LLM rather than raw stack traces.
+
+## Lessons Learned
+
+1. **Start with schemas**. The MCP tool schema is your contract with the LLM. Invest time in clear descriptions, examples, and validation.
+2. **Rate limit aggressively**. Jenkins can be slow. Cache job listings and implement debouncing.
+3. **Security first**. Never expose credential values. Always validate permissions before executing destructive operations.
+4. **Test with real prompts**. The best tool designs emerge from watching how actual users phrase requests.
+
+## What's Next
+
+I'm exploring:
+
+- Pipeline-as-code generation from natural language
+- Integration with GitHub Actions MCP for hybrid workflows
+- A web UI that visualizes agent reasoning
+
+If you're building MCP servers, my advice is simple: pick a domain you know deeply, start with 5-10 high-quality tools, and iterate based on real usage.

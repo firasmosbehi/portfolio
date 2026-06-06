@@ -1,0 +1,123 @@
+---
+title: "Reducing Docker Image Sizes by 90%: A Case Study"
+description: "How multi-stage builds, distroless base images, and layer caching reduced a production Docker image from 1.2GB to 120MB."
+date: "2025-12-28"
+tags: ["docker", "optimization", "security", "performance", "devops"]
+---
+
+# Reducing Docker Image Sizes by 90%: A Case Study
+
+Docker image size isn't just a storage concern. Smaller images deploy faster, reduce attack surface, and lower cloud costs. In this case study, I'll walk through how I reduced a production Next.js application image from **1.2GB to 120MB**.
+
+## The Starting Point
+
+The original Dockerfile was straightforward but inefficient:
+
+```dockerfile
+FROM node:20
+WORKDIR /app
+COPY . .
+RUN npm install
+RUN npm run build
+EXPOSE 3000
+CMD ["npm", "start"]
+```
+
+Problems:
+
+- Full `node:20` image includes build tools, compilers, and shell utilities
+- `npm install` runs in production, including devDependencies
+- No layer caching strategy — every code change invalidated the install layer
+- Source code and build artifacts mixed in the final image
+
+## Step 1: Multi-Stage Build
+
+Separate the build environment from the runtime environment:
+
+```dockerfile
+# Build stage
+FROM node:20-alpine AS builder
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci
+COPY . .
+RUN npm run build
+
+# Production stage
+FROM node:20-alpine AS runner
+WORKDIR /app
+ENV NODE_ENV=production
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/public ./public
+EXPOSE 3000
+CMD ["node", "server.js"]
+```
+
+This alone dropped the image to ~400MB.
+
+## Step 2: Enable Standalone Output
+
+Next.js can generate a standalone build with only necessary dependencies:
+
+```js
+// next.config.js
+module.exports = {
+  output: 'standalone',
+};
+```
+
+## Step 3: Use a Distroless Base
+
+For the final image, I switched to Google's distroless Node.js image:
+
+```dockerfile
+FROM gcr.io/distroless/nodejs20-debian12
+WORKDIR /app
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/public ./public
+EXPOSE 3000
+CMD ["server.js"]
+```
+
+Distroless images contain only the application and its runtime dependencies — no package manager, shell, or unnecessary utilities.
+
+## Step 4: Optimize Layer Caching
+
+Reorder Dockerfile instructions to maximize cache hits:
+
+```dockerfile
+COPY package*.json ./
+RUN npm ci --only=production
+COPY . .
+```
+
+By copying dependency manifests first, `npm ci` only re-runs when dependencies actually change.
+
+## Security Bonus
+
+The final distroless image:
+
+- Has no shell for attackers to exploit
+- Contains no package manager for privilege escalation
+- Minimizes the software supply chain
+
+Trivy scans went from 200+ vulnerabilities to under 10.
+
+## Results
+
+| Metric | Before | After | Improvement |
+|--------|--------|-------|-------------|
+| Image size | 1.2GB | 120MB | **-90%** |
+| Build time | 4m 30s | 2m 10s | **-52%** |
+| Vulnerabilities | 200+ | `&lt;10` | **-95%** |
+| Deploy time | 45s | 8s | **-82%** |
+
+## Quick Wins for Any Dockerfile
+
+1. Use multi-stage builds
+2. Choose minimal base images (`alpine`, `slim`, or `distroless`)
+3. Copy dependency files before source code
+4. Remove build dependencies and caches
+5. Use `.dockerignore` aggressively
+
+Small images are faster, cheaper, and more secure. The optimization effort pays for itself in every deployment.

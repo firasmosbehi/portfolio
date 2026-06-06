@@ -1,7 +1,11 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 import LayoutWrapper from "./components/LayoutWrapper";
+import ThemeProvider from "./components/ThemeProvider";
+import { CommandPaletteProvider } from "./components/CommandPaletteContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -13,7 +17,15 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  userScalable: true,
+};
+
 export const metadata: Metadata = {
+  metadataBase: new URL("https://firasmosbahi.com"),
   title: {
     default: "Firas Mosbehi - DevSecOps Engineer | Kubernetes & AWS Expert",
     template: "%s | Firas Mosbehi - DevSecOps Engineer"
@@ -39,12 +51,6 @@ export const metadata: Metadata = {
   authors: [{ name: "Firas Mosbehi", url: "https://firasmosbahi.com" }],
   creator: "Firas Mosbehi",
   publisher: "Firas Mosbehi",
-  viewport: {
-    width: "device-width",
-    initialScale: 1,
-    maximumScale: 5,
-    userScalable: true,
-  },
   robots: {
     index: true,
     follow: true,
@@ -72,12 +78,36 @@ export const metadata: Metadata = {
   },
   alternates: {
     canonical: "https://firasmosbahi.com",
+    types: {
+      'application/rss+xml': 'https://firasmosbahi.com/feed.xml',
+    },
   },
   verification: {
     google: "google-site-verification-code-here",
   },
   category: "technology",
+  icons: {
+    icon: "/favicon.ico",
+    shortcut: "/favicon.ico",
+    apple: "/favicon.ico",
+  },
 };
+
+const themeScript = `
+  (function() {
+    try {
+      var theme = localStorage.getItem('portfolio-theme') || 'system';
+      var resolved = theme === 'system'
+        ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+        : theme;
+      document.documentElement.classList.add(resolved);
+      document.documentElement.style.colorScheme = resolved;
+    } catch (e) {
+      document.documentElement.classList.add('light');
+      document.documentElement.style.colorScheme = 'light';
+    }
+  })();
+`;
 
 export default function RootLayout({
   children,
@@ -120,17 +150,24 @@ export default function RootLayout({
   };
 
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
         />
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <LayoutWrapper>{children}</LayoutWrapper>
+        <ThemeProvider>
+          <CommandPaletteProvider>
+            <LayoutWrapper>{children}</LayoutWrapper>
+          </CommandPaletteProvider>
+          <Analytics />
+          <SpeedInsights />
+        </ThemeProvider>
       </body>
     </html>
   );

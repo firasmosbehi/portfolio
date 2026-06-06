@@ -9,17 +9,20 @@ export default function PageTransition({ children }: { children: React.ReactNode
     // Trigger animation after mount
     const timer = setTimeout(() => {
       setIsVisible(true);
-    }, 10);
+    }, 30);
 
     return () => clearTimeout(timer);
   }, []);
 
   return (
     <div
-      className={`transition-all duration-500 ease-out will-change-transform ${
-        isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-      }`}
-      style={{ transform: 'translateZ(0)' }} // Hardware acceleration for mobile
+      className="transition-all will-change-transform"
+      style={{
+        opacity: isVisible ? 1 : 0,
+        transform: isVisible ? 'translateY(0) scale(1)' : 'translateY(16px) scale(0.995)',
+        transitionDuration: isVisible ? '600ms' : '200ms',
+        transitionTimingFunction: 'cubic-bezier(0.16, 1, 0.3, 1)',
+      }}
     >
       {children}
     </div>

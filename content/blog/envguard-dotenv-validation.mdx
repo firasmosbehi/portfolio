@@ -1,0 +1,93 @@
+---
+title: "Validating .env Files at Scale with Go"
+description: "How I built envguard, a Go CLI tool that validates environment variables against declarative YAML schemas to prevent production misconfigurations."
+date: "2026-05-16"
+tags: ["go", "cli", "env", "validation", "developer-experience"]
+---
+
+# Validating .env Files at Scale with Go
+
+Environment variable misconfigurations are a deceptively common source of production incidents. A missing `DATABASE_URL`, an invalid `PORT` value, or a typo in `JWT_SECRET` can bring down an otherwise healthy deployment. I built **envguard** to catch these issues before they reach production.
+
+## The Problem
+
+Most teams validate application logic with comprehensive test suites, but environment configuration is often treated as an afterthought. Common failures I've seen:
+
+- Required variables missing in staging but present in production
+- Secrets accidentally committed because `.env.example` was outdated
+- Type mismatches (string vs. integer vs. boolean)
+- Invalid URL formats or unreachable endpoints
+
+## The Solution: Declarative Schema Validation
+
+envguard uses a simple YAML schema file that describes what each environment variable should look like:
+
+```yaml
+variables:
+  DATABASE_URL:
+    required: true
+    type: url
+    description: PostgreSQL connection string
+  PORT:
+    required: true
+    type: integer
+    min: 1024
+    max: 65535
+  DEBUG:
+    required: false
+    type: boolean
+    default: false
+  ALLOWED_HOSTS:
+    required: true
+    type: string
+    pattern: '^([a-z0-9.-]+,)*[a-z0-9.-]+$'
+```
+
+Running `envguard validate` compares your `.env` file against this schema and reports any violations:
+
+```bash
+$ envguard validate
+✗ PORT: expected integer, got "eight-thousand"
+✗ DATABASE_URL: required variable is missing
+⚠ DEBUG: using default value "false"
+```
+
+## Why Go?
+
+I chose Go for three reasons:
+
+1. **Single binary distribution** — no runtime dependencies
+2. **Fast execution** — validation runs in milliseconds
+3. **Cross-platform** — identical behavior on macOS, Linux, and Windows
+
+## Implementation Highlights
+
+### Parser
+
+I used a custom parser that preserves comments and variable ordering, making it easy to generate reports that map directly back to the source file.
+
+### Type System
+
+The type checker supports:
+
+- Primitive types: `string`, `integer`, `float`, `boolean`
+- Structured types: `url`, `email`, `json`
+- Constraints: `min`, `max`, `pattern`, `enum`, `length`
+
+### CI/CD Integration
+
+envguard shines in CI pipelines. A single command gatekeeps deployments:
+
+```yaml
+- name: Validate environment
+  run: envguard validate --strict --schema env.schema.yml
+```
+
+## Adoption Tips
+
+1. Start with `required: true` on critical variables
+2. Use `pattern` constraints sparingly — they're powerful but can be brittle
+3. Commit your schema file and treat it as production code
+4. Run validation in pre-commit hooks for fast feedback
+
+The best validation is the kind developers don't have to think about. envguard runs silently in the background and only speaks up when something is wrong.

@@ -9,10 +9,21 @@ interface AnimatedSectionProps {
 }
 
 export default function AnimatedSection({ children, className = '', id }: AnimatedSectionProps) {
-  const [isVisible, setIsVisible] = useState(false);
+  const [isVisible, setIsVisible] = useState(true); // Start visible to avoid FCP/LCP penalty
   const sectionRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
+    if (!sectionRef.current) return;
+
+    const el = sectionRef.current;
+    const rect = el.getBoundingClientRect();
+    const inViewport = rect.top < window.innerHeight && rect.bottom > 0;
+
+    // Only hide and animate elements that are initially below the viewport
+    if (!inViewport) {
+      setIsVisible(false);
+    }
+
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
@@ -25,14 +36,10 @@ export default function AnimatedSection({ children, className = '', id }: Animat
       }
     );
 
-    if (sectionRef.current) {
-      observer.observe(sectionRef.current);
-    }
+    observer.observe(el);
 
     return () => {
-      if (sectionRef.current) {
-        observer.unobserve(sectionRef.current);
-      }
+      observer.unobserve(el);
     };
   }, []);
 
@@ -41,9 +48,7 @@ export default function AnimatedSection({ children, className = '', id }: Animat
       ref={sectionRef}
       id={id}
       className={`${className} transition-all duration-1000 ease-out will-change-transform ${
-        isVisible
-          ? 'opacity-100 translate-y-0'
-          : 'opacity-0 translate-y-10'
+        isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
       }`}
       style={{ transform: 'translateZ(0)' }} // Hardware acceleration for mobile
     >

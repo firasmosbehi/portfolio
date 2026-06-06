@@ -9,10 +9,20 @@ interface FadeInStaggerProps {
 }
 
 export default function FadeInStagger({ children, className = '', delay = 0 }: FadeInStaggerProps) {
-  const [isVisible, setIsVisible] = useState(false);
+  const [isVisible, setIsVisible] = useState(true); // Start visible for SSR/FCP
   const elementRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    if (!elementRef.current) return;
+
+    const el = elementRef.current;
+    const rect = el.getBoundingClientRect();
+    const inViewport = rect.top < window.innerHeight && rect.bottom > 0;
+
+    if (!inViewport) {
+      setIsVisible(false);
+    }
+
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
@@ -24,14 +34,10 @@ export default function FadeInStagger({ children, className = '', delay = 0 }: F
       }
     );
 
-    if (elementRef.current) {
-      observer.observe(elementRef.current);
-    }
+    observer.observe(el);
 
     return () => {
-      if (elementRef.current) {
-        observer.unobserve(elementRef.current);
-      }
+      observer.unobserve(el);
     };
   }, []);
 

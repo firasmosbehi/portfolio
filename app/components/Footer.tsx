@@ -3,10 +3,20 @@
 import { useEffect, useRef, useState } from 'react';
 
 export default function Footer() {
-  const [isVisible, setIsVisible] = useState(false);
+  const [isVisible, setIsVisible] = useState(true); // Start visible for SSR/FCP
   const footerRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
+    if (!footerRef.current) return;
+
+    const el = footerRef.current;
+    const rect = el.getBoundingClientRect();
+    const inViewport = rect.top < window.innerHeight && rect.bottom > 0;
+
+    if (!inViewport) {
+      setIsVisible(false);
+    }
+
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
@@ -18,14 +28,10 @@ export default function Footer() {
       }
     );
 
-    if (footerRef.current) {
-      observer.observe(footerRef.current);
-    }
+    observer.observe(el);
 
     return () => {
-      if (footerRef.current) {
-        observer.unobserve(footerRef.current);
-      }
+      observer.unobserve(el);
     };
   }, []);
 
