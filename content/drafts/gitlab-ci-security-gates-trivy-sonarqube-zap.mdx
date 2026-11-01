@@ -1,0 +1,258 @@
+---
+title: "Shifting Security Left in GitLab CI: Trivy, SonarQube and OWASP ZAP as Pipeline Gates"
+description: "How to wire Trivy, SonarQube and OWASP ZAP into GitLab CI as blocking stages, with sane severity thresholds, a false-positive workflow, and pipelines that stay fast."
+date: "TBD"
+tags: ["devsecops", "gitlab-ci", "trivy", "sonarqube", "owasp-zap", "security"]
+draft: true
+---
+
+<!-- BEFORE PUBLISHING: (1) fill every [TODO: ...] placeholder with real details or delete the sentence; (2) resolve every "TODO verify" comment against the current docs of Trivy, SonarQube, ZAP and GitLab CI; (3) pin real image versions; (4) run the full .gitlab-ci.yml through GitLab's CI Lint (Build > Pipeline editor) on a test project; (5) set a real date; (6) check nothing here exposes internal The QA Company details you are not allowed to share; (7) remove `draft: true` and move the file to content/blog/. -->
+
+# Shifting Security Left in GitLab CI: Trivy, SonarQube and OWASP ZAP as Pipeline Gates
+
+At The QA Company, I integrated Trivy, SonarQube and OWASP ZAP into our GitLab CI pipelines. Together they cut critical vulnerabilities reaching production by 70%. None of the three tools is new. What made the difference was how they were wired: as **gates** with clear thresholds, an owner for every exception, and a pipeline that developers didn't learn to hate.
+
+This post walks through that setup: one stage per scanner, how to choose what blocks a merge, how to handle false positives without turning the gate off, and how to keep the whole thing fast.
+
+[TODO: real anecdote from The QA Company — what the pipeline looked like before the gates, or the finding that convinced the team to start]
+
+## Three Scanners, Three Questions
+
+Each tool answers a different question, at a different point in the pipeline:
+
+| Tool | Question | Runs against | When |
+|------|----------|--------------|------|
+| **SonarQube** | Is the code we wrote safe and maintainable? | Source code | Every MR |
+| **Trivy** | Does what we ship contain known vulnerabilities or misconfigurations? | Container image, IaC, dependencies | Every MR, after build |
+| **OWASP ZAP** | Does the running application behave insecurely? | A deployed environment | After deploy to review/staging |
+
+They overlap a little, but not much. SonarQube won't tell you that your base image ships a vulnerable OpenSSL, Trivy won't spot a SQL injection in your own code, and neither one notices a missing `Content-Security-Policy` header on a live endpoint.
+
+## The Pipeline Skeleton
+
+```yaml
+stages:
+  - build
+  - test
+  - scan
+  - deploy-review
+  - dast
+  - deploy
+
+variables:
+  IMAGE: "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA"
+```
+
+The order matters. Static analysis and image scanning run before anything gets deployed. DAST needs a running target, so it runs after a review or staging deploy and gates promotion to production.
+
+## Stage 1: SonarQube for Static Analysis
+
+SonarSource documents a GitLab CI job based on the `sonar-scanner-cli` image. The parts that matter are full git history (so new code gets detected correctly and blame works) and `sonar.qualitygate.wait`, which makes the job fail when the quality gate fails:
+
+```yaml
+sonarqube:
+  stage: test
+  image:
+    name: sonarsource/sonar-scanner-cli:latest  # pin a version in real use
+    entrypoint: [""]
+  variables:
+    SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"
+    GIT_DEPTH: "0"
+  cache:
+    key: "${CI_JOB_NAME}"
+    paths:
+      - .sonar/cache
+  script:
+    - sonar-scanner -Dsonar.qualitygate.wait=true -Dsonar.qualitygate.timeout=300
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+```
+
+`SONAR_HOST_URL` and `SONAR_TOKEN` are masked CI/CD variables, set at group level so every project inherits them.
+
+### Gate on New Code, Not on History
+
+The setting that decides whether the gate succeeds is the **quality gate definition**, not the CI job. If you point a strict gate at a legacy codebase, every pipeline goes red on day one and someone will quietly add `allow_failure: true`.
+
+Gate on **new code** instead: no new vulnerabilities, every new Security Hotspot reviewed, and a minimum security rating on new code. The backlog gets paid down separately, on a schedule. Developers only own what they just touched.
+
+<!-- TODO verify: Merge request decoration in GitLab requires SonarQube Developer Edition or higher (or SonarQube Cloud). Confirm current edition requirements before stating. -->
+
+[TODO: which quality gate conditions you actually used at The QA Company]
+
+## Stage 2: Trivy for Images and IaC
+
+Trivy scans the image you just built, the exact artifact that will be deployed, before it is promoted. The trick is to run it twice: once to **report** everything, and once to **block** only on what you have agreed is unacceptable.
+
+```yaml
+trivy-image:
+  stage: scan
+  image:
+    name: aquasec/trivy:latest  # pin a version in real use
+    entrypoint: [""]
+  needs: ["build-image"]
+  variables:
+    TRIVY_USERNAME: "$CI_REGISTRY_USER"
+    TRIVY_PASSWORD: "$CI_REGISTRY_PASSWORD"
+    TRIVY_CACHE_DIR: ".trivycache/"
+    TRIVY_NO_PROGRESS: "true"
+  cache:
+    key: trivy-db
+    paths:
+      - .trivycache/
+  script:
+    # Full report, never fails the job
+    - trivy image --exit-code 0 --severity HIGH,CRITICAL --format json --output trivy-report.json "$IMAGE"
+    # Gate: fail on fixable CRITICAL findings only
+    - trivy image --exit-code 1 --severity CRITICAL --ignore-unfixed "$IMAGE"
+  artifacts:
+    when: always
+    paths:
+      - trivy-report.json
+```
+
+The vulnerability DB download only happens once, because the second `trivy image` call reuses the cache from the first.
+
+### Choosing the Threshold
+
+Three choices do most of the work:
+
+- **`--severity CRITICAL` blocks, HIGH is reported.** Start here. Once the CRITICAL count stays at zero, tighten the gate to `HIGH,CRITICAL`. A gate you can actually hold is worth more than a strict one everybody bypasses.
+- **`--ignore-unfixed`** skips vulnerabilities that have no fixed version. You can't act on them in this MR, so blocking on them only trains people to ignore the gate. They still show up in the report.
+- **Scan the built image, not the Dockerfile.** The image is what runs, and it includes OS packages from the base image that no source scanner sees.
+
+<!-- TODO verify: newer Trivy releases also offer --ignore-status for finer control than --ignore-unfixed. Check which one is recommended in the version you pin. -->
+
+### Scanning Terraform and Kubernetes Manifests
+
+The same binary checks infrastructure code for misconfigurations, such as public S3 buckets, privileged pods or missing resource limits:
+
+```yaml
+trivy-iac:
+  stage: test
+  image:
+    name: aquasec/trivy:latest
+    entrypoint: [""]
+  script:
+    - trivy config --exit-code 1 --severity HIGH,CRITICAL ./infra
+  rules:
+    - changes:
+        - infra/**/*
+```
+
+The `rules:changes` clause means this job only runs when infrastructure code changed.
+
+## Stage 3: OWASP ZAP Against a Live Environment
+
+ZAP is a dynamic scanner. It crawls the running application and looks for insecure behaviour: missing security headers, cookies without `Secure` or `HttpOnly`, information leaks, and so on. The **baseline scan** is passive and finishes in minutes, which makes it a good fit for every pipeline.
+
+The official images now live under `zaproxy/` on Docker Hub. The old `owasp/zap2docker-*` images are deprecated.
+
+```yaml
+zap-baseline:
+  stage: dast
+  image: zaproxy/zap-stable:latest  # pin a version in real use
+  needs: ["deploy-review"]
+  variables:
+    TARGET_URL: "$REVIEW_APP_URL"
+  script:
+    - mkdir -p /zap/wrk
+    - cp .zap/rules.tsv /zap/wrk/rules.tsv
+    - zap-baseline.py -t "$TARGET_URL" -c rules.tsv -r zap-report.html -J zap-report.json || EXIT_CODE=$?
+    - cp /zap/wrk/zap-report.* "$CI_PROJECT_DIR/"
+    - exit ${EXIT_CODE:-0}
+  allow_failure:
+    exit_codes: [2]
+  artifacts:
+    when: always
+    paths:
+      - zap-report.html
+      - zap-report.json
+```
+
+<!-- TODO verify: that the zap user in the zap-stable image can create /zap/wrk when GitLab runs the job inside the image (no volume mount). If not, run with a writable path or adjust permissions. -->
+
+The packaged scan scripts use meaningful exit codes. `0` means clean, `1` means at least one rule set to FAIL triggered, `2` means warnings only, and `3` means the scan itself broke. With GitLab's `allow_failure: exit_codes`, warnings show up as an orange pipeline but don't block the merge, while FAIL findings or a broken scan do.
+
+### Run the Full Scan on a Schedule
+
+`zap-full-scan.py` runs an active scan. It actually attacks the target, takes much longer, and must never point at production. Run it nightly against staging instead of on every MR:
+
+```yaml
+zap-full:
+  extends: zap-baseline
+  script:
+    - mkdir -p /zap/wrk && cp .zap/rules.tsv /zap/wrk/
+    - zap-full-scan.py -t "$STAGING_URL" -c rules.tsv -r zap-full.html || EXIT_CODE=$?
+    - cp /zap/wrk/zap-full.html "$CI_PROJECT_DIR/"
+    - exit ${EXIT_CODE:-0}
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+```
+
+<!-- TODO verify: that `extends` merges as intended here (needs/artifacts inherited from zap-baseline may not fit a scheduled job). Consider a hidden .zap-base template instead. -->
+
+## Handling False Positives Without Killing the Gate
+
+Every scanner produces noise. How a team handles that noise decides whether the gate survives its first month. The rule I follow: **every exception lives in Git, has a reason, and expires.**
+
+### Trivy: `.trivyignore` with Expiry Dates
+
+```text
+# Not exploitable: affected function is never called. Reviewed by @owner, see SEC-123
+CVE-2024-XXXXX exp:2025-06-30
+```
+
+Trivy reads `.trivyignore` from the working directory by default. Once the `exp:` date passes, the entry stops applying and the finding comes back. That forces someone to look at it again instead of letting the exception live forever. For more structured exceptions, Trivy also supports `.trivyignore.yaml` and VEX documents.
+
+<!-- TODO verify: exp: syntax in plain .trivyignore and the current status (experimental or stable) of .trivyignore.yaml in the pinned Trivy version. -->
+
+### SonarQube: Review in the UI, Not in Config
+
+Mark false positives and accepted issues in SonarQube itself, so the decision is attached to the issue along with who made it. Avoid broad `sonar.exclusions` patterns. They hide whole files from analysis, including whatever real problems end up in them later.
+
+### ZAP: A Versioned `rules.tsv`
+
+Generate a starting config with `-g`, then commit it:
+
+```text
+10038	WARN	(Content Security Policy (CSP) Header Not Set)
+10021	FAIL	(X-Content-Type-Options Header Missing)
+10096	IGNORE	(Timestamp Disclosure - Unix)
+```
+
+Each line is a rule ID, an action (`IGNORE`, `INFO`, `WARN` or `FAIL`) and a description, separated by tabs. Promoting a rule from WARN to FAIL is a one-line MR that everyone can review.
+
+[TODO: real example of a false positive the team hit and how it was resolved]
+
+## Keeping Pipelines Fast
+
+Developers will tolerate a security gate. They won't tolerate one that adds fifteen minutes to every push. A few things kept our pipelines quick:
+
+1. **Use `needs:` to build a DAG.** SonarQube doesn't need the image, and the IaC scan doesn't need SonarQube. Let independent jobs start as soon as their inputs exist instead of waiting for the whole previous stage.
+2. **Cache the Trivy DB.** Downloading it on every job is slow and can hit registry rate limits. Cache it per runner, or mirror it to your own registry and point Trivy at the mirror with `--db-repository`.
+3. **Scope jobs with `rules:changes`.** Docs-only MRs don't need an image scan, and app-only MRs don't need an IaC scan.
+4. **Baseline on MRs, full scans on a schedule.** Passive DAST per change, active DAST nightly.
+5. **Cache SonarQube's analysis data** in `.sonar/cache`, as in the job above.
+
+[TODO: real number — typical pipeline duration before and after the security stages at The QA Company]
+
+## Making It Stick Across Projects
+
+Copy-pasting these jobs into every repository leads to drift within weeks. Put them in a shared template project and include them:
+
+```yaml
+include:
+  - project: "platform/ci-templates"
+    ref: v1.4.0
+    file: "/security/gates.yml"
+```
+
+Pinning `ref` to a tag lets you roll out a stricter threshold project by project, instead of breaking every pipeline in the company on the same afternoon.
+
+## Final Thoughts
+
+Shifting security left doesn't mean buying more scanners. It means putting the ones you already have where they can block a merge, choosing thresholds the team can actually hold, and treating every exception as code with an owner and an expiry date.
+
+Start with one blocking rule per tool: no new vulnerabilities in SonarQube, no fixable CRITICALs in Trivy, and a short FAIL list in ZAP. Tighten the rules once the pipeline has been green for a while. That's how we got the 70% drop in critical vulnerabilities, and the gates stayed on afterwards.
