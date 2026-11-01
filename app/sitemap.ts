@@ -1,75 +1,33 @@
 import { MetadataRoute } from 'next'
+import { getAllPosts } from '../lib/blog'
+
+const baseUrl = 'https://firasmosbahi.com'
+
+// No lastModified on static pages: a build timestamp on every URL teaches crawlers to ignore lastmod.
+const pages: { path: string; priority: number; changeFrequency: 'monthly' | 'weekly' | 'yearly' }[] = [
+  { path: '', priority: 1, changeFrequency: 'monthly' },
+  { path: '/about', priority: 0.8, changeFrequency: 'monthly' },
+  { path: '/experience', priority: 0.9, changeFrequency: 'monthly' },
+  { path: '/projects', priority: 0.9, changeFrequency: 'weekly' },
+  { path: '/skills', priority: 0.8, changeFrequency: 'monthly' },
+  { path: '/education', priority: 0.7, changeFrequency: 'yearly' },
+  { path: '/certifications', priority: 0.7, changeFrequency: 'yearly' },
+  { path: '/testimonials', priority: 0.6, changeFrequency: 'yearly' },
+  { path: '/now', priority: 0.6, changeFrequency: 'monthly' },
+  { path: '/contact', priority: 0.6, changeFrequency: 'yearly' },
+]
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://firasmosbahi.com'
-  const currentDate = new Date()
+  const posts = getAllPosts()
 
   return [
-    {
-      url: baseUrl,
-      lastModified: currentDate,
-      changeFrequency: 'monthly',
-      priority: 1,
-    },
-    {
-      url: `${baseUrl}/about`,
-      lastModified: currentDate,
-      changeFrequency: 'monthly',
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/experience`,
-      lastModified: currentDate,
-      changeFrequency: 'monthly',
-      priority: 0.9,
-    },
-    {
-      url: `${baseUrl}/projects`,
-      lastModified: currentDate,
-      changeFrequency: 'weekly',
-      priority: 0.9,
-    },
-    {
-      url: `${baseUrl}/skills`,
-      lastModified: currentDate,
-      changeFrequency: 'monthly',
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/education`,
-      lastModified: currentDate,
-      changeFrequency: 'yearly',
+    ...pages.map((p) => ({ url: `${baseUrl}${p.path}`, changeFrequency: p.changeFrequency, priority: p.priority })),
+    { url: `${baseUrl}/blog`, lastModified: posts[0]?.date, changeFrequency: 'weekly', priority: 0.8 },
+    ...posts.map((post) => ({
+      url: `${baseUrl}/blog/${post.slug}`,
+      lastModified: post.date,
+      changeFrequency: 'yearly' as const,
       priority: 0.7,
-    },
-    {
-      url: `${baseUrl}/certifications`,
-      lastModified: currentDate,
-      changeFrequency: 'yearly',
-      priority: 0.7,
-    },
-    {
-      url: `${baseUrl}/blog`,
-      lastModified: currentDate,
-      changeFrequency: 'weekly',
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/testimonials`,
-      lastModified: currentDate,
-      changeFrequency: 'yearly',
-      priority: 0.6,
-    },
-    {
-      url: `${baseUrl}/now`,
-      lastModified: currentDate,
-      changeFrequency: 'monthly',
-      priority: 0.6,
-    },
-    {
-      url: `${baseUrl}/contact`,
-      lastModified: currentDate,
-      changeFrequency: 'yearly',
-      priority: 0.6,
-    },
+    })),
   ]
 }

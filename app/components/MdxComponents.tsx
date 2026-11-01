@@ -8,57 +8,43 @@ interface CodeProps {
 async function CodeBlock({ children, className }: CodeProps) {
   const language = className?.replace('language-', '') || 'text';
 
+  // Dual themes: light colors inline, dark colors as --shiki-dark vars swapped in under .dark below.
   const html = await codeToHtml(children, {
     lang: language as never,
-    theme: 'github-dark',
+    themes: { light: 'github-light', dark: 'github-dark' },
   });
 
   return (
     <div
-      className="my-6 rounded-xl overflow-hidden border border-zinc-200 dark:border-zinc-800 text-sm leading-relaxed"
+      className="my-6 rounded-lg overflow-hidden border border-line bg-surface text-sm leading-relaxed [&_pre]:bg-surface! [&_pre]:p-4 [&_pre]:overflow-x-auto [&_code]:font-mono dark:[&_pre]:text-(--shiki-dark)! dark:[&_span]:text-(--shiki-dark)!"
       dangerouslySetInnerHTML={{ __html: html }}
     />
   );
 }
 
+type Props = { children?: React.ReactNode };
+
 export const mdxComponents = {
-  h1: ({ children }: { children?: React.ReactNode }) => (
-    <h1 className="text-3xl sm:text-4xl font-bold text-zinc-900 dark:text-zinc-100 mt-10 mb-6 leading-tight">
-      {children}
-    </h1>
+  // The post title is the page's only h1, so MDX headings shift down one level.
+  h1: ({ children }: Props) => (
+    <h2 className="text-2xl sm:text-3xl font-semibold tracking-tight mt-12 mb-4 leading-tight">{children}</h2>
   ),
-  h2: ({ children }: { children?: React.ReactNode }) => (
-    <h2 className="text-2xl sm:text-3xl font-bold text-zinc-900 dark:text-zinc-100 mt-10 mb-4 leading-tight">
-      {children}
-    </h2>
+  h2: ({ children }: Props) => (
+    <h2 className="text-2xl font-semibold tracking-tight mt-12 mb-4 leading-tight">{children}</h2>
   ),
-  h3: ({ children }: { children?: React.ReactNode }) => (
-    <h3 className="text-xl sm:text-2xl font-bold text-zinc-900 dark:text-zinc-100 mt-8 mb-3 leading-tight">
-      {children}
-    </h3>
+  h3: ({ children }: Props) => (
+    <h3 className="text-xl font-semibold tracking-tight mt-8 mb-3 leading-tight">{children}</h3>
   ),
-  p: ({ children }: { children?: React.ReactNode }) => (
-    <p className="text-base sm:text-lg text-zinc-600 dark:text-zinc-400 mb-5 leading-relaxed">
-      {children}
-    </p>
+  p: ({ children }: Props) => <p className="text-base sm:text-[17px] mb-5 leading-relaxed">{children}</p>,
+  ul: ({ children }: Props) => <ul className="list-disc pl-6 mb-5 space-y-2 marker:text-muted">{children}</ul>,
+  ol: ({ children }: Props) => (
+    <ol className="list-decimal pl-6 mb-5 space-y-2 marker:font-mono marker:text-muted">{children}</ol>
   ),
-  ul: ({ children }: { children?: React.ReactNode }) => (
-    <ul className="list-disc pl-6 mb-5 space-y-2 text-zinc-600 dark:text-zinc-400">
-      {children}
-    </ul>
-  ),
-  ol: ({ children }: { children?: React.ReactNode }) => (
-    <ol className="list-decimal pl-6 mb-5 space-y-2 text-zinc-600 dark:text-zinc-400">
-      {children}
-    </ol>
-  ),
-  li: ({ children }: { children?: React.ReactNode }) => (
-    <li className="text-base sm:text-lg leading-relaxed">{children}</li>
-  ),
+  li: ({ children }: Props) => <li className="text-base sm:text-[17px] leading-relaxed">{children}</li>,
   a: ({ href, children }: { href?: string; children?: React.ReactNode }) => (
     <a
       href={href}
-      className="text-blue-600 dark:text-blue-400 hover:underline"
+      className="text-accent underline underline-offset-4"
       target={href?.startsWith('http') ? '_blank' : undefined}
       rel={href?.startsWith('http') ? 'noopener noreferrer' : undefined}
     >
@@ -68,39 +54,23 @@ export const mdxComponents = {
   code: ({ children, className }: CodeProps) => {
     // Inline code (no className) vs code block (has language- class)
     if (!className) {
-      return (
-        <code className="px-1.5 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 text-sm font-mono">
-          {children}
-        </code>
-      );
+      return <code className="font-mono text-[0.9em] bg-surface border border-line px-1 rounded">{children}</code>;
     }
     return <CodeBlock className={className}>{children}</CodeBlock>;
   },
-  pre: ({ children }: { children?: React.ReactNode }) => <>{children}</>,
-  blockquote: ({ children }: { children?: React.ReactNode }) => (
-    <blockquote className="border-l-4 border-blue-500 pl-5 py-1 my-6 italic text-zinc-700 dark:text-zinc-300 bg-zinc-50 dark:bg-zinc-900/50 rounded-r-lg">
-      {children}
-    </blockquote>
+  pre: ({ children }: Props) => <>{children}</>,
+  blockquote: ({ children }: Props) => (
+    <blockquote className="border-l-2 border-line pl-4 my-6 text-muted [&_p]:text-muted">{children}</blockquote>
   ),
-  hr: () => <hr className="my-10 border-zinc-200 dark:border-zinc-800" />,
-  table: ({ children }: { children?: React.ReactNode }) => (
-    <div className="overflow-x-auto my-6">
-      <table className="w-full text-sm text-left border-collapse">
-        {children}
-      </table>
+  hr: () => <hr className="my-10 border-line" />,
+  table: ({ children }: Props) => (
+    <div className="overflow-x-auto my-6 border border-line rounded-lg">
+      <table className="w-full text-sm text-left border-collapse">{children}</table>
     </div>
   ),
-  th: ({ children }: { children?: React.ReactNode }) => (
-    <th className="px-4 py-3 font-semibold text-zinc-900 dark:text-zinc-100 bg-zinc-100 dark:bg-zinc-800 border-b border-zinc-200 dark:border-zinc-700">
-      {children}
-    </th>
+  th: ({ children }: Props) => (
+    <th className="px-4 py-3 font-mono text-xs font-medium text-muted bg-surface border-b border-line">{children}</th>
   ),
-  td: ({ children }: { children?: React.ReactNode }) => (
-    <td className="px-4 py-3 text-zinc-600 dark:text-zinc-400 border-b border-zinc-200 dark:border-zinc-800">
-      {children}
-    </td>
-  ),
-  strong: ({ children }: { children?: React.ReactNode }) => (
-    <strong className="font-semibold text-zinc-900 dark:text-zinc-100">{children}</strong>
-  ),
+  td: ({ children }: Props) => <td className="px-4 py-3 border-b border-line">{children}</td>,
+  strong: ({ children }: Props) => <strong className="font-semibold text-fg">{children}</strong>,
 };

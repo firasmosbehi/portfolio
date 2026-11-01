@@ -5,7 +5,7 @@ export async function GET() {
   const baseUrl = 'https://firasmosbahi.com';
 
   const rss = `<?xml version="1.0" encoding="UTF-8"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:dc="http://purl.org/dc/elements/1.1/">
   <channel>
     <title>Firas Mosbehi - Technical Blog</title>
     <link>${baseUrl}/blog</link>
@@ -20,6 +20,7 @@ export async function GET() {
       <title>${escapeXml(post.title)}</title>
       <link>${baseUrl}/blog/${post.slug}</link>
       <guid>${baseUrl}/blog/${post.slug}</guid>
+      <dc:creator>Firas Mosbehi</dc:creator>
       <pubDate>${new Date(post.date).toUTCString()}</pubDate>
       <description>${escapeXml(post.description)}</description>
       ${post.tags.map((tag) => `<category>${escapeXml(tag)}</category>`).join('')}
@@ -31,7 +32,7 @@ export async function GET() {
 
   return new Response(rss, {
     headers: {
-      'Content-Type': 'application/xml',
+      'Content-Type': 'application/rss+xml; charset=utf-8',
     },
   });
 }

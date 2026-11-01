@@ -75,7 +75,7 @@ my-portfolio/
 │   │   ├── Contact.tsx           # Contact section
 │   │   ├── Navigation.tsx        # Top nav bar + mobile hamburger menu
 │   │   ├── Footer.tsx            # Site footer
-│   │   ├── LayoutWrapper.tsx     # Client-side wrapper: wheel/keyboard nav, layout shell
+│   │   ├── LayoutWrapper.tsx     # Layout shell: skip link, nav, main, footer, command palette
 │   │   ├── PageTransition.tsx    # Fade-in page transition wrapper
 │   │   ├── AnimatedSection.tsx   # IntersectionObserver-based scroll reveal
 │   │   └── FadeInStagger.tsx     # Staggered fade-in for child elements
@@ -120,14 +120,15 @@ Each route is a thin server component that exports `metadata` for SEO and wraps 
 ### Styling Conventions
 
 - **Tailwind CSS v4** utility classes are used exclusively for styling.
-- **Color palette**: `zinc` for neutrals, `blue` and `cyan` for accents. Dark mode variants use `dark:` prefixes.
+- **Design system ("Control Plane")**: hairline rules, Geist sans + Geist Mono for metadata, one lime signal accent. Design source: the Claude Design canvas "Portfolio Redesign".
+- **Color tokens only**: `bg-bg`, `bg-surface`, `border-line`, `divide-line`, `text-fg`, `text-muted`, `text-accent`, `bg-accent`, `bg-fill`, `text-on-fill`. They are CSS variables in `globals.css` (`:root` = light, `.dark` = dark) mapped via `@theme inline`, so no `dark:` color variants are needed. Do not use Tailwind palette colors (`zinc`, `blue`, …), gradients, shadows or `hover:scale-*`.
+- Use `bg-accent` (not `bg-fill`) for non-text graphics like bars and dots: lime fill fails 3:1 contrast on the light ground.
+- **Dark mode**: `@custom-variant dark` binds `dark:` to the `.dark` class set by `ThemeProvider`.
 - **Responsive prefixes**: `sm:`, `md:`, `lg:` are used heavily. The codebase is **mobile-first**.
-- **Custom properties**: CSS variables `--background` and `--foreground` are defined in `globals.css` and mapped via `@theme inline`.
-- Common utility patterns seen in the codebase:
-  - `min-h-screen flex items-center justify-center` for vertically centered sections
-  - `max-w-7xl mx-auto px-4 sm:px-6` for consistent content width and padding
-  - `transition-all duration-300` / `hover:scale-105` / `active:scale-95` for interactive feedback
-  - `will-change-transform` and `translateZ(0)` for hardware-accelerated animations
+- Common utility patterns:
+  - `max-w-6xl mx-auto px-4 sm:px-6` for content width, `py-20 sm:py-28` for sections
+  - Each route's main heading is an `<h1>` with a mono route index (`01`…`10`) in `text-accent`
+  - Primary button `bg-fill text-on-fill`; secondary `border border-line hover:border-muted`
 
 ### Accessibility
 
@@ -143,7 +144,7 @@ Each route is a thin server component that exports `metadata` for SEO and wraps 
 - `AnimatedSection` — Uses `IntersectionObserver` to trigger a fade+translate animation when the section enters the viewport.
 - `FadeInStagger` — Similar to `AnimatedSection` but supports a configurable `delay` prop for staggered child animations.
 - `PageTransition` — Simple mount-based fade-in used on every route page.
-- `LayoutWrapper` handles **wheel scrolling navigation** and **arrow key navigation** on desktop (disabled on mobile). It debounces wheel events and locks navigation for 800ms between route changes.
+- Pages scroll normally. The old wheel/arrow-key route navigation in `LayoutWrapper` was removed because it made long pages unscrollable on desktop.
 
 ---
 
@@ -163,11 +164,9 @@ Each route is a thin server component that exports `metadata` for SEO and wraps 
 
 The site is heavily optimized for mobile devices:
 
-- Wheel/keyboard navigation is **disabled on mobile** (`window.innerWidth < 1024` or touch devices).
-- CSS reduces `animation-duration` and `transition-duration` to `0.3s` on mobile for performance.
 - `overscroll-behavior-y: none` prevents bounce on iOS.
-- `-webkit-overflow-scrolling: touch` enables smooth scrolling on iOS.
 - `touch-action: manipulation` removes double-tap zoom delays.
+- 44×44px minimum tap targets apply to nav controls and icon buttons only (not inline links).
 - `overflow-x: hidden` on mobile body prevents horizontal scroll.
 
 ---
@@ -182,7 +181,7 @@ The site is heavily optimized for mobile devices:
 
 ## Security Considerations
 
-- No user input forms or authentication exist in the current codebase.
+- The contact form posts to `app/api/contact/route.ts`, which sends mail via Resend. Treat it as a trust boundary: validate input server-side.
 - `dangerouslySetInnerHTML` is used **only once** in `layout.tsx` to inject the JSON-LD structured data. The content is hardcoded and safe.
 - External links (e.g., CV download, social links) should use `rel="noopener noreferrer"` when opening in a new tab.
 
@@ -194,7 +193,7 @@ The site is heavily optimized for mobile devices:
 - Export `Metadata` from every new route page for consistent SEO.
 - Wrap route content in `PageTransition` to maintain consistent enter animations.
 - Use `AnimatedSection` and `FadeInStagger` for scroll-reveal effects.
-- Update `LayoutWrapper`'s `routes` array if adding or reordering top-level routes (this array drives the wheel/keyboard navigation order).
+- Add new top-level routes to `Navigation.tsx` (`allLinks`, and `primaryLinks` if it belongs in the desktop bar), the command palette, and the footer if relevant.
 - Update `sitemap.ts` when adding new routes.
 - Maintain mobile-first responsive class ordering (`sm:`, `md:`, `lg:`).
 - Prefer `next/link` for internal navigation and `next/font` for fonts.
