@@ -194,7 +194,7 @@ The site is heavily optimized for mobile devices:
 ## Deployment Notes
 
 - `next.config.ts` is currently minimal. If deploying to static hosting (e.g., GitHub Pages, Cloudflare Pages), you may need to add `output: 'export'` and configure `distDir` or `images.unoptimized`.
-- The site origin comes from `SITE_URL` in `lib/seo.ts`: `NEXT_PUBLIC_SITE_URL`, else Vercel's `VERCEL_PROJECT_PRODUCTION_URL` (follows a custom domain once attached), else the vercel.app address. Never hardcode the domain.
+- The site origin comes from `SITE_URL` in `lib/seo.ts`: `NEXT_PUBLIC_SITE_URL`, else Vercel's `VERCEL_PROJECT_PRODUCTION_URL` (follows a custom domain once attached), else `https://mosbehi.firas.im` (custom domain, bought via Vercel, Vercel-managed DNS). Never hardcode the domain elsewhere.
 - The `public/cv.pdf` file is served at `/cv.pdf`.
 
 ---
