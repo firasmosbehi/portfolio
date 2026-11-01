@@ -97,14 +97,8 @@ function ProficiencyBar({ name, level }: SkillItem) {
         <span className="text-sm text-fg">{name}</span>
         <span className="font-mono text-xs text-muted tabular-nums">{level}%</span>
       </div>
-      <div
-        className="h-1 w-full rounded-full bg-line overflow-hidden"
-        role="progressbar"
-        aria-label={`${name} proficiency`}
-        aria-valuenow={level}
-        aria-valuemin={0}
-        aria-valuemax={100}
-      >
+      {/* Decorative: the % text above already carries the value */}
+      <div className="h-1 w-full rounded-full bg-line overflow-hidden" aria-hidden="true">
         <div className="h-full rounded-full bg-accent" style={{ width: `${level}%` }} />
       </div>
     </li>

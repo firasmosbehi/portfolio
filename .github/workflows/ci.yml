@@ -57,6 +57,8 @@ jobs:
         with:
           name: build
           path: .next/
+          # .next is a dot-dir; upload-artifact v4 skips hidden files by default
+          include-hidden-files: true
           retention-days: 7
 
   lighthouse:

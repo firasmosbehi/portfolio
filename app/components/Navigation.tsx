@@ -20,7 +20,6 @@ const allLinks = [
   { href: '/education', label: 'education' },
   { href: '/certifications', label: 'certifications' },
   { href: '/blog', label: 'blog' },
-  { href: '/testimonials', label: 'reviews' },
   { href: '/now', label: 'now' },
   { href: '/contact', label: 'contact' },
 ];
@@ -30,6 +29,7 @@ export default function Navigation() {
   const pathname = usePathname();
   // On the <header> so taps inside the mobile panel aren't treated as outside clicks
   const navRef = useRef<HTMLElement>(null);
+  const toggleRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     // Close mobile menu when route changes
@@ -45,7 +45,11 @@ export default function Navigation() {
       }
     };
     const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') setIsMobileMenuOpen(false);
+      if (event.key === 'Escape') {
+        setIsMobileMenuOpen(false);
+        // Focus may be inside the panel that is about to be hidden
+        toggleRef.current?.focus();
+      }
     };
 
     // Prevent body scroll when mobile menu is open
@@ -89,6 +93,7 @@ export default function Navigation() {
           <CommandPaletteTrigger showLabel={false} showShortcut={false} size="sm" />
           <ThemeToggle />
           <button
+            ref={toggleRef}
             type="button"
             className="w-10 h-10 flex items-center justify-center text-fg"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}

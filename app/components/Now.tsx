@@ -21,9 +21,6 @@ const sections = [
   {
     title: 'Building',
     content: [
-      <span key="jenkins-mcp">
-        <strong className="font-medium text-fg">jenkins-mcp</strong> — A comprehensive MCP server for Jenkins CI/CD with 25+ tools and dual transport support
-      </span>,
       <span key="envguard">
         <strong className="font-medium text-fg">envguard</strong> — A Go CLI tool to validate .env files against declarative YAML schemas
       </span>,
@@ -52,7 +49,7 @@ const sections = [
 ];
 
 export default function Now() {
-  const lastUpdated = 'June 2026';
+  const lastUpdated = 'November 2026';
 
   return (
     <AnimatedSection className="w-full py-20 sm:py-28">

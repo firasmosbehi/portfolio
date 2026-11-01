@@ -1,21 +1,30 @@
 import AnimatedSection from './AnimatedSection';
 import FadeInStagger from './FadeInStagger';
 
-const certifications = [
+interface Certification {
+  name: string;
+  issuer: string;
+  date: string;
+  expiry: string;
+  status: 'completed' | 'in-progress' | 'planned';
+  description: string;
+}
+
+const certifications: Certification[] = [
   {
     name: 'Certified Kubernetes Administrator (CKA)',
     issuer: 'Cloud Native Computing Foundation (CNCF)',
-    date: 'In Progress',
+    date: 'target 2027',
     expiry: '—',
-    status: 'in-progress' as const,
+    status: 'in-progress',
     description: 'Demonstrates deep Kubernetes cluster administration skills including installation, configuration, networking, storage, security, and troubleshooting.',
   },
   {
     name: 'HashiCorp Certified: Terraform Associate',
     issuer: 'HashiCorp',
-    date: 'In Progress',
+    date: 'target 2027',
     expiry: '—',
-    status: 'in-progress' as const,
+    status: 'in-progress',
     description: 'Validates proficiency in Infrastructure as Code using Terraform, including state management, modules, workspaces, and cloud provider integrations.',
   },
   {
@@ -23,7 +32,7 @@ const certifications = [
     issuer: 'Amazon Web Services',
     date: 'Planned',
     expiry: '—',
-    status: 'planned' as const,
+    status: 'planned',
     description: 'Covers designing distributed systems on AWS, including high availability, cost optimization, security, and scalable architectures.',
   },
   {
@@ -31,7 +40,7 @@ const certifications = [
     issuer: 'Docker, Inc.',
     date: 'Planned',
     expiry: '—',
-    status: 'planned' as const,
+    status: 'planned',
     description: 'Proves expertise in containerization, Docker image creation, orchestration, networking, storage, and enterprise operations.',
   },
 ];
@@ -66,8 +75,14 @@ export default function CertificationsComponent() {
                     <p className={status.class}>
                       <span className="sr-only">Status: </span>[{status.label}]
                     </p>
-                    <p>issued {cert.date}</p>
-                    <p>expires {cert.expiry}</p>
+                    {cert.status === 'completed' ? (
+                      <>
+                        <p>issued {cert.date}</p>
+                        <p>expires {cert.expiry}</p>
+                      </>
+                    ) : (
+                      cert.status === 'in-progress' && <p>{cert.date}</p>
+                    )}
                   </div>
                   <div className="flex-1 min-w-0 basis-80">
                     <h2 className="text-xl font-semibold">{cert.name}</h2>
@@ -84,7 +99,7 @@ export default function CertificationsComponent() {
           <p className="mt-8 text-sm text-muted leading-relaxed max-w-3xl">
             <span className="font-mono text-fg">note:</span> Certifications marked as &quot;In
             Progress&quot; are actively being studied for. Those marked as &quot;Planned&quot; are
-            on the roadmap for 2026. This page is updated as credentials are earned.
+            on the roadmap. This page is updated as credentials are earned.
           </p>
         </FadeInStagger>
       </div>

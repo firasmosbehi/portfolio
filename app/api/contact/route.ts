@@ -54,13 +54,6 @@ export async function POST(request: NextRequest) {
     const forwardedFor = request.headers.get('x-forwarded-for');
     const ip = request.headers.get('x-real-ip') ?? forwardedFor?.split(',').pop()?.trim() ?? 'unknown';
 
-    if (!checkRateLimit(ip)) {
-      return NextResponse.json(
-        { error: 'Too many submissions. Please try again later.' },
-        { status: 429 }
-      );
-    }
-
     const body = await request.json().catch(() => null);
     if (!body || typeof body !== 'object') {
       return NextResponse.json({ error: 'Invalid request.' }, { status: 400 });
@@ -125,6 +118,14 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: 'Invalid subject selection.' },
         { status: 400 }
+      );
+    }
+
+    // Counted only after validation so typos don't burn the quota
+    if (!checkRateLimit(ip)) {
+      return NextResponse.json(
+        { error: 'Too many submissions. Please try again later.' },
+        { status: 429 }
       );
     }
 

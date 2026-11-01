@@ -111,6 +111,39 @@ export default function CommandPalette({ isOpen, onClose }: CommandPaletteProps)
       action: () => navigate('/education'),
     },
     {
+      id: 'nav-certifications',
+      title: 'Go to Certifications',
+      subtitle: 'Professional certifications',
+      icon: (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+        </svg>
+      ),
+      action: () => navigate('/certifications'),
+    },
+    {
+      id: 'nav-blog',
+      title: 'Go to Blog',
+      subtitle: 'Read my writing',
+      icon: (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+        </svg>
+      ),
+      action: () => navigate('/blog'),
+    },
+    {
+      id: 'nav-now',
+      title: 'Go to Now',
+      subtitle: 'What I am focused on now',
+      icon: (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      ),
+      action: () => navigate('/now'),
+    },
+    {
       id: 'nav-contact',
       title: 'Go to Contact',
       subtitle: 'Get in touch',
@@ -211,15 +244,19 @@ export default function CommandPalette({ isOpen, onClose }: CommandPaletteProps)
     setSelectedIndex(0);
   }, [query]);
 
-  // Focus input when opened
+  // Focus input when opened, restore previous focus when closed
   useEffect(() => {
     if (isOpen) {
+      const previouslyFocused = document.activeElement as HTMLElement | null;
       setQuery('');
       setSelectedIndex(0);
       const timer = setTimeout(() => {
         inputRef.current?.focus();
       }, 50);
-      return () => clearTimeout(timer);
+      return () => {
+        clearTimeout(timer);
+        previouslyFocused?.focus();
+      };
     }
   }, [isOpen]);
 
@@ -245,6 +282,10 @@ export default function CommandPalette({ isOpen, onClose }: CommandPaletteProps)
       } else if (e.key === 'Escape') {
         e.preventDefault();
         onClose();
+      } else if (e.key === 'Tab') {
+        // Focus trap: the input is the only focusable element in the dialog
+        e.preventDefault();
+        inputRef.current?.focus();
       }
     };
 
@@ -294,7 +335,7 @@ export default function CommandPalette({ isOpen, onClose }: CommandPaletteProps)
             className="flex-1 bg-transparent text-fg placeholder:text-muted outline-none text-base"
             role="combobox"
             aria-label="Search commands"
-            aria-expanded="true"
+            aria-expanded={filteredCommands.length > 0}
             aria-controls="command-palette-list"
             aria-autocomplete="list"
             aria-activedescendant={
@@ -313,7 +354,7 @@ export default function CommandPalette({ isOpen, onClose }: CommandPaletteProps)
           aria-label="Commands"
         >
           {filteredCommands.length === 0 ? (
-            <li className="px-4 py-8 text-center font-mono text-sm text-muted">
+            <li role="option" aria-disabled="true" aria-selected={false} className="px-4 py-8 text-center font-mono text-sm text-muted">
               no commands found for &quot;{query}&quot;
             </li>
           ) : (

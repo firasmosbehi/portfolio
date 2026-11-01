@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import AnimatedSection from './AnimatedSection';
 import FadeInStagger from './FadeInStagger';
 import GlassCard from './GlassCard';
@@ -27,6 +27,12 @@ export default function Contact() {
   });
   const [status, setStatus] = useState<FormStatus>('idle');
   const [errorMessage, setErrorMessage] = useState('');
+  const successRef = useRef<HTMLDivElement>(null);
+
+  // The form (and its focused submit button) unmounts on success; move focus so it isn't lost
+  useEffect(() => {
+    if (status === 'success') successRef.current?.focus();
+  }, [status]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
@@ -47,7 +53,8 @@ export default function Contact() {
         body: JSON.stringify(formData),
       });
 
-      const data = await response.json();
+      // Non-JSON bodies (e.g. a proxy's 502 HTML page) fall through to the generic error
+      const data = await response.json().catch(() => ({}));
 
       if (!response.ok) {
         throw new Error(data.error || 'Something went wrong');
@@ -104,7 +111,7 @@ export default function Contact() {
           <FadeInStagger delay={300} className="lg:col-span-3">
             <GlassCard className="p-6 sm:p-8" hover={false}>
               {status === 'success' ? (
-                <div className="py-6" role="status">
+                <div ref={successRef} tabIndex={-1} className="py-6 outline-none" role="status">
                   <p className="font-mono text-xs text-accent">status: sent</p>
                   <h2 className="mt-3 text-xl font-semibold tracking-tight">Message Sent!</h2>
                   <p className="mt-2 text-muted leading-relaxed">

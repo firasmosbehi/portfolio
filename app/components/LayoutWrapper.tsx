@@ -1,13 +1,8 @@
-'use client';
-
 import Navigation from './Navigation';
 import Footer from './Footer';
-import CommandPalette from './CommandPalette';
-import { useCommandPaletteContext } from './CommandPaletteContext';
+import CommandPaletteHost from './CommandPaletteHost';
 
 export default function LayoutWrapper({ children }: { children: React.ReactNode }) {
-  const { isOpen: isCommandPaletteOpen, close: closeCommandPalette } = useCommandPaletteContext();
-
   return (
     <div className="min-h-screen bg-bg text-fg">
       <a
@@ -19,7 +14,7 @@ export default function LayoutWrapper({ children }: { children: React.ReactNode 
       <Navigation />
       <main id="main" className="relative">{children}</main>
       <Footer />
-      <CommandPalette isOpen={isCommandPaletteOpen} onClose={closeCommandPalette} />
+      <CommandPaletteHost />
     </div>
   );
 }

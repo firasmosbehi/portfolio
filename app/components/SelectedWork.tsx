@@ -2,11 +2,6 @@ import Link from 'next/link';
 
 const projects = [
   {
-    name: 'jenkins-mcp',
-    desc: 'MCP server with 25+ tools that lets AI agents drive Jenkins pipelines. stdio + SSE, published to npm.',
-    tags: 'typescript / mcp / jenkins',
-  },
-  {
     name: 'envguard',
     desc: 'Go CLI that validates .env files against declarative YAML schemas — misconfig fails before prod.',
     tags: 'go / cli / devex',
@@ -17,9 +12,14 @@ const projects = [
     tags: 'go / cli / dev tools',
   },
   {
-    name: 'release-note-generator',
-    desc: 'GitHub Action that drafts release notes from Conventional Commit PR titles on tag push.',
-    tags: 'typescript / github actions',
+    name: 'taskboard-kubernetes',
+    desc: 'Production-style EKS platform: ArgoCD GitOps, Gateway API on an AWS ALB, full observability stack.',
+    tags: 'kubernetes / aws eks / argocd / terraform',
+  },
+  {
+    name: 'optimized-dockerfiles',
+    desc: 'Hardened multi-stage Dockerfiles for popular frameworks — images up to 90% smaller.',
+    tags: 'docker / security / next.js / fastapi',
   },
 ];
 

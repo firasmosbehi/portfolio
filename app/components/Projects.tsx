@@ -4,17 +4,6 @@ import FadeInStagger from './FadeInStagger';
 export default function Projects() {
   const projects = [
     {
-      title: 'jenkins-mcp',
-      items: [
-        'Built a comprehensive MCP (Model Context Protocol) server for Jenkins with 25+ tools enabling AI agents to interact with CI/CD pipelines',
-        'Implemented dual transport support (stdio and SSE) for flexible integration with Claude, Cursor, and other AI assistants',
-        'Developed in TypeScript with full test coverage and published to npm for global installation',
-      ],
-      tags: ['TypeScript', 'MCP', 'Jenkins', 'CI/CD', 'AI Integration'],
-      github: 'https://github.com/firasmosbehi/jenkins-mcp',
-      featured: true,
-    },
-    {
       title: 'envguard',
       items: [
         'Created a Go CLI tool that validates .env files against declarative YAML schemas',
@@ -34,17 +23,6 @@ export default function Projects() {
       ],
       tags: ['Go', 'CLI', 'Developer Tools', 'Cross-platform'],
       github: 'https://github.com/firasmosbehi/portman',
-      featured: true,
-    },
-    {
-      title: 'release-note-generator',
-      items: [
-        'GitHub Action that drafts release notes from Conventional Commit PR titles when you push a tag',
-        'Automates changelog generation and reduces release overhead for teams using conventional commits',
-        'Published to GitHub Marketplace with TypeScript implementation',
-      ],
-      tags: ['TypeScript', 'GitHub Actions', 'Automation', 'Release Management'],
-      github: 'https://github.com/firasmosbehi/release-note-generator',
       featured: true,
     },
     {
