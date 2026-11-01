@@ -1,11 +1,11 @@
 // Canonical origin for metadata, sitemap, robots, feed and JSON-LD.
 // NEXT_PUBLIC_SITE_URL wins; otherwise Vercel's production domain (it switches to a custom
-// domain automatically once one is attached); otherwise the current vercel.app address.
+// domain automatically once one is attached); otherwise the custom domain (CI/local builds).
 export const SITE_URL = (
   process.env.NEXT_PUBLIC_SITE_URL ??
   (process.env.VERCEL_PROJECT_PRODUCTION_URL
     ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
-    : 'https://portfolio-firas-projects.vercel.app')
+    : 'https://mosbehi.firas.im')
 ).replace(/\/$/, '');
 
 export const SITE_HOST = new URL(SITE_URL).host;
