@@ -100,10 +100,9 @@ my-portfolio/
 │   └── blog/page.tsx, blog/[slug]/page.tsx    # Blog index + MDX posts
 ├── content/blog/*.mdx            # Blog posts (frontmatter: title, description, date, tags)
 ├── lib/blog.ts                   # Post loading/sorting
-├── lib/seo.ts                    # baseOpenGraph spread into each route's metadata
+├── lib/seo.ts                    # SITE_URL + baseOpenGraph for route metadata
 ├── public/                       # Static assets
-│   ├── cv.pdf                    # Resume/CV download
-│   └── robots.txt                # SEO robots rules
+│   └── cv.pdf                    # Resume/CV download
 └── ...config files
 ```
 
@@ -172,12 +171,12 @@ Each route is a thin server component that exports `metadata` (with `alternates.
 ## SEO and Metadata
 
 - Every route exports a `Metadata` object with `title`, `description`, and OpenGraph tags.
-- `layout.tsx` contains comprehensive root metadata: default title template, keywords, robots, canonical URL, Twitter card, and Google site verification placeholder.
+- `layout.tsx` contains comprehensive root metadata: default title template, keywords, robots, canonical URL and Twitter card. Add `verification.google` once Search Console gives a code.
 - **Structured Data**: A JSON-LD `Person` schema is injected into `<head>` in `layout.tsx`.
 - **`app/sitemap.ts`** dynamically generates a sitemap at `/sitemap.xml`.
-- **`public/robots.txt`** allows all crawlers and points to the sitemap.
+- **`app/robots.ts`** allows all crawlers and points to the sitemap.
 
-> **Important**: Update the Google site verification code in `layout.tsx` (`metadata.verification.google`) and the `baseUrl` in `sitemap.ts` if the domain changes.
+> **Important**: The domain lives only in `SITE_URL` (`lib/seo.ts`); set `NEXT_PUBLIC_SITE_URL` to override it.
 
 ---
 
@@ -195,7 +194,7 @@ The site is heavily optimized for mobile devices:
 ## Deployment Notes
 
 - `next.config.ts` is currently minimal. If deploying to static hosting (e.g., GitHub Pages, Cloudflare Pages), you may need to add `output: 'export'` and configure `distDir` or `images.unoptimized`.
-- The site expects a custom domain (`https://firasmosbahi.com`) as referenced in metadata and sitemap.
+- The site origin comes from `SITE_URL` in `lib/seo.ts`: `NEXT_PUBLIC_SITE_URL`, else Vercel's `VERCEL_PROJECT_PRODUCTION_URL` (follows a custom domain once attached), else the vercel.app address. Never hardcode the domain.
 - The `public/cv.pdf` file is served at `/cv.pdf`.
 
 ---

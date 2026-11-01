@@ -1,4 +1,5 @@
 import { ImageResponse } from 'next/og';
+import { SITE_HOST } from '../../lib/seo';
 
 export const size = {
   width: 1200,
@@ -102,7 +103,7 @@ export function generateOgImage({
             color: MUTED,
           }}
         >
-          <span>firasmosbahi.com</span>
+          <span>{SITE_HOST}</span>
           <span style={{ color: ACCENT }}>DevSecOps</span>
         </div>
       </div>
