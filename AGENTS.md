@@ -171,7 +171,7 @@ Each route is a thin server component that exports `metadata` (with `alternates.
 ## SEO and Metadata
 
 - Every route exports a `Metadata` object with `title`, `description`, and OpenGraph tags.
-- `layout.tsx` contains comprehensive root metadata: default title template, keywords, robots, canonical URL and Twitter card. Add `verification.google` once Search Console gives a code.
+- `layout.tsx` contains comprehensive root metadata: default title template, keywords, robots, canonical URL, Twitter card and the Google Search Console `verification.google` tag (property: https://mosbehi.firas.im).
 - **Structured Data**: A JSON-LD `Person` schema is injected into `<head>` in `layout.tsx`.
 - **`app/sitemap.ts`** dynamically generates a sitemap at `/sitemap.xml`.
 - **`app/robots.ts`** allows all crawlers and points to the sitemap.

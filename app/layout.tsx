@@ -80,6 +80,9 @@ export const metadata: Metadata = {
       'application/rss+xml': '/feed.xml',
     },
   },
+  verification: {
+    google: "dWRISc3-7YweJASb5n2ijKWi2bbmaLQDIOk4hI22_O8",
+  },
   category: "technology",
   icons: {
     icon: "/favicon.ico",
