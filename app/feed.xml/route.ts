@@ -1,8 +1,9 @@
 import { getAllPosts } from '../../lib/blog';
+import { SITE_URL } from '../../lib/seo';
 
 export async function GET() {
   const posts = getAllPosts();
-  const baseUrl = 'https://firasmosbahi.com';
+  const baseUrl = SITE_URL;
 
   const rss = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:dc="http://purl.org/dc/elements/1.1/">

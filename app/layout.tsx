@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
+import { SITE_URL } from "../lib/seo";
 import LayoutWrapper from "./components/LayoutWrapper";
 import ThemeProvider from "./components/ThemeProvider";
 import { CommandPaletteProvider } from "./components/CommandPaletteContext";
@@ -25,7 +26,7 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://firasmosbahi.com"),
+  metadataBase: new URL(SITE_URL),
   title: {
     default: "Firas Mosbehi - DevSecOps Engineer | Kubernetes & AWS Expert",
     template: "%s | Firas Mosbehi - DevSecOps Engineer"
@@ -48,7 +49,7 @@ export const metadata: Metadata = {
     "Container Orchestration",
     "Firas Mosbehi"
   ],
-  authors: [{ name: "Firas Mosbehi", url: "https://firasmosbahi.com" }],
+  authors: [{ name: "Firas Mosbehi", url: SITE_URL }],
   creator: "Firas Mosbehi",
   publisher: "Firas Mosbehi",
   robots: {
@@ -65,19 +66,18 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://firasmosbahi.com",
+    url: "/",
     title: "Firas Mosbehi - DevSecOps Engineer | Kubernetes & AWS Expert",
     description: "DevSecOps Engineer specializing in Kubernetes, AWS, CI/CD pipelines, and Infrastructure as Code. Expert in cloud automation and container orchestration.",
     siteName: "Firas Mosbehi Portfolio",
   },
   twitter: {
     card: "summary_large_image",
-    creator: "@firasmosbahi",
   },
   alternates: {
     canonical: "/",
     types: {
-      'application/rss+xml': 'https://firasmosbahi.com/feed.xml',
+      'application/rss+xml': '/feed.xml',
     },
   },
   category: "technology",
@@ -115,7 +115,7 @@ export default function RootLayout({
     "name": "Firas Mosbehi",
     "jobTitle": "DevSecOps Engineer",
     "description": "DevSecOps Engineer specializing in Kubernetes, AWS, CI/CD pipelines, Infrastructure as Code (Terraform, Ansible), and container orchestration.",
-    "url": "https://firasmosbahi.com",
+    "url": SITE_URL,
     "sameAs": ["https://github.com/firasmosbehi", "https://linkedin.com/in/firasmosbehi"],
     "email": "firas.mosbehi@insat.ucar.tn",
     "address": {

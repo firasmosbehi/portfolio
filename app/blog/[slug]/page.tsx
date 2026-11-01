@@ -8,7 +8,7 @@ import FadeInStagger from '../../components/FadeInStagger';
 import PageTransition from '../../components/PageTransition';
 import { mdxComponents } from '../../components/MdxComponents';
 import remarkGfm from 'remark-gfm';
-import { baseOpenGraph } from '../../../lib/seo';
+import { baseOpenGraph, SITE_URL } from '../../../lib/seo';
 
 interface BlogPostPageProps {
   params: Promise<{ slug: string }>;
@@ -54,8 +54,8 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     headline: post.title,
     description: post.description,
     datePublished: post.date,
-    url: `https://firasmosbahi.com/blog/${slug}`,
-    author: { '@type': 'Person', name: 'Firas Mosbehi', url: 'https://firasmosbahi.com' },
+    url: `${SITE_URL}/blog/${slug}`,
+    author: { '@type': 'Person', name: 'Firas Mosbehi', url: SITE_URL },
     keywords: post.tags.join(', '),
   };
 

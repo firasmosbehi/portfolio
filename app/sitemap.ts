@@ -1,7 +1,8 @@
 import { MetadataRoute } from 'next'
 import { getAllPosts } from '../lib/blog'
+import { SITE_URL } from '../lib/seo'
 
-const baseUrl = 'https://firasmosbahi.com'
+const baseUrl = SITE_URL
 
 // No lastModified on static pages: a build timestamp on every URL teaches crawlers to ignore lastmod.
 const pages: { path: string; priority: number; changeFrequency: 'monthly' | 'weekly' | 'yearly' }[] = [
