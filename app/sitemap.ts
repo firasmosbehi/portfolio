@@ -12,7 +12,6 @@ const pages: { path: string; priority: number; changeFrequency: 'monthly' | 'wee
   { path: '/skills', priority: 0.8, changeFrequency: 'monthly' },
   { path: '/education', priority: 0.7, changeFrequency: 'yearly' },
   { path: '/certifications', priority: 0.7, changeFrequency: 'yearly' },
-  { path: '/testimonials', priority: 0.6, changeFrequency: 'yearly' },
   { path: '/now', priority: 0.6, changeFrequency: 'monthly' },
   { path: '/contact', priority: 0.6, changeFrequency: 'yearly' },
 ]

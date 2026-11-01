@@ -6,10 +6,10 @@ A modern, responsive portfolio website built with Next.js and TypeScript, showca
 
 ## Tech Stack
 
-- **Framework**: [Next.js 16.1.0](https://nextjs.org) - React framework with App Router
+- **Framework**: [Next.js 16.4](https://nextjs.org) - React framework with App Router
 - **Language**: [TypeScript 5](https://www.typescriptlang.org/) - Type-safe JavaScript
 - **Styling**: [Tailwind CSS 4](https://tailwindcss.com/) - Utility-first CSS framework
-- **UI Library**: [React 19.2.3](https://react.dev/) - Latest React with concurrent features
+- **UI Library**: [React 19.3](https://react.dev/) - Latest React with concurrent features
 - **Development**: ESLint for code quality
 
 ## Demo

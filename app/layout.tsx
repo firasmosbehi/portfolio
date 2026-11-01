@@ -118,7 +118,6 @@ export default function RootLayout({
     "url": "https://firasmosbahi.com",
     "sameAs": ["https://github.com/firasmosbehi", "https://linkedin.com/in/firasmosbehi"],
     "email": "firas.mosbehi@insat.ucar.tn",
-    "telephone": "+33776118453",
     "address": {
       "@type": "PostalAddress",
       "addressLocality": "Saint Etienne",

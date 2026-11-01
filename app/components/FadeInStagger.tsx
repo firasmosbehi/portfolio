@@ -44,7 +44,7 @@ export default function FadeInStagger({ children, className = '', delay = 0 }: F
   return (
     <div
       ref={elementRef}
-      className={`transition-all duration-700 ease-out ${className}`}
+      className={`transition-all duration-700 ease-out motion-reduce:delay-0! ${className}`}
       style={{
         opacity: isVisible ? 1 : 0,
         transform: isVisible ? 'translateY(0)' : 'translateY(20px)',

@@ -16,8 +16,8 @@ The project is licensed under the MIT License.
 
 | Layer | Technology | Version |
 |-------|-----------|---------|
-| Framework | [Next.js](https://nextjs.org) | 16.1.0 (App Router) |
-| UI Library | [React](https://react.dev) | 19.2.3 |
+| Framework | [Next.js](https://nextjs.org) | 16.4 (App Router) |
+| UI Library | [React](https://react.dev) | 19.3 |
 | Language | [TypeScript](https://www.typescriptlang.org/) | 5 |
 | Styling | [Tailwind CSS](https://tailwindcss.com/) | 4 |
 | Font | Geist (Sans + Mono) via `next/font/google` | — |
@@ -61,10 +61,13 @@ There is **no test suite** configured in this project. If you add tests, update 
 ```
 my-portfolio/
 ├── app/                          # Next.js App Router
-│   ├── page.tsx                  # Home page (renders Hero)
+│   ├── page.tsx                  # Home: Hero, StatsSection, SelectedWork, LatestPosts, GitHubActivity
 │   ├── layout.tsx                # Root layout with metadata, fonts, structured data
 │   ├── globals.css               # Tailwind entry + global styles + mobile optimizations
-│   ├── sitemap.ts                # Dynamic sitemap generation
+│   ├── sitemap.ts                # Sitemap: static routes + blog posts
+│   ├── feed.xml/route.ts         # RSS feed
+│   ├── api/contact/route.ts      # Contact form POST → Resend (needs RESEND_API_KEY)
+│   ├── opengraph-image.tsx       # OG images (per route too, via components/OgImage.tsx)
 │   ├── components/               # Shared React components (all co-located here)
 │   │   ├── Hero.tsx              # Landing hero section
 │   │   ├── About.tsx             # About me section
@@ -72,7 +75,15 @@ my-portfolio/
 │   │   ├── Projects.tsx          # Featured projects grid
 │   │   ├── Skills.tsx            # Skills showcase
 │   │   ├── Education.tsx         # Education section
-│   │   ├── Contact.tsx           # Contact section
+│   │   ├── Contact.tsx           # Contact section + form
+│   │   ├── SelectedWork.tsx      # Home: 4 featured projects
+│   │   ├── LatestPosts.tsx       # Home: latest blog posts
+│   │   ├── StatsSection.tsx      # Home: impact figures strip
+│   │   ├── GitHubActivity.tsx    # Home: live GitHub repos/languages (server fetch, ISR)
+│   │   ├── Certifications.tsx, Now.tsx, Testimonials.tsx
+│   │   ├── CommandPalette*.tsx   # ⌘K palette + context + trigger
+│   │   ├── ThemeProvider.tsx / ThemeToggle.tsx
+│   │   ├── MdxComponents.tsx     # Blog MDX element styles
 │   │   ├── Navigation.tsx        # Top nav bar + mobile hamburger menu
 │   │   ├── Footer.tsx            # Site footer
 │   │   ├── LayoutWrapper.tsx     # Layout shell: skip link, nav, main, footer, command palette
@@ -84,7 +95,12 @@ my-portfolio/
 │   ├── education/page.tsx        # Route: /education
 │   ├── experience/page.tsx       # Route: /experience
 │   ├── projects/page.tsx         # Route: /projects
-│   └── skills/page.tsx           # Route: /skills
+│   ├── skills/page.tsx           # Route: /skills
+│   ├── certifications/, now/, testimonials/   # Routes (testimonials is noindex + unlinked)
+│   └── blog/page.tsx, blog/[slug]/page.tsx    # Blog index + MDX posts
+├── content/blog/*.mdx            # Blog posts (frontmatter: title, description, date, tags)
+├── lib/blog.ts                   # Post loading/sorting
+├── lib/seo.ts                    # baseOpenGraph spread into each route's metadata
 ├── public/                       # Static assets
 │   ├── cv.pdf                    # Resume/CV download
 │   └── robots.txt                # SEO robots rules
@@ -97,15 +113,20 @@ The site uses **Next.js App Router** with the following routes:
 
 | Route | Page Component |
 |-------|---------------|
-| `/` | `Hero` |
+| `/` | `Hero` + home sections |
 | `/about` | `About` |
 | `/experience` | `Experience` |
 | `/projects` | `Projects` |
 | `/skills` | `Skills` |
 | `/education` | `Education` |
+| `/certifications` | `Certifications` |
+| `/blog`, `/blog/[slug]` | blog index, MDX post |
+| `/now` | `Now` |
+| `/testimonials` | `Testimonials` (noindex, not linked) |
 | `/contact` | `Contact` |
+| `/feed.xml`, `/sitemap.xml`, `/api/contact` | RSS, sitemap, contact POST |
 
-Each route is a thin server component that exports `metadata` for SEO and wraps the section component in `PageTransition`.
+Each route is a thin server component that exports `metadata` (with `alternates.canonical` and `...baseOpenGraph` + `url`) and wraps the section component in `PageTransition`.
 
 ---
 
@@ -190,7 +211,7 @@ The site is heavily optimized for mobile devices:
 ## When Making Changes
 
 - Keep components in `app/components/` unless they are route-specific.
-- Export `Metadata` from every new route page for consistent SEO.
+- Export `Metadata` from every new route page, including `alternates: { canonical: '/route' }` and `openGraph: { ...baseOpenGraph, url: '/route' }` (child metadata replaces, not merges, the root values).
 - Wrap route content in `PageTransition` to maintain consistent enter animations.
 - Use `AnimatedSection` and `FadeInStagger` for scroll-reveal effects.
 - Add new top-level routes to `Navigation.tsx` (`allLinks`, and `primaryLinks` if it belongs in the desktop bar), the command palette, and the footer if relevant.

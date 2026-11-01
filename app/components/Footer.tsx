@@ -3,7 +3,6 @@ import Link from 'next/link';
 const links = [
   { href: '/education', label: 'education' },
   { href: '/certifications', label: 'certs' },
-  { href: '/testimonials', label: 'reviews' },
   { href: '/now', label: 'now' },
   { href: 'https://github.com/firasmosbehi', label: 'github' },
   { href: 'https://linkedin.com/in/firasmosbehi', label: 'linkedin' },

@@ -23,6 +23,8 @@ async function fetchGitHubStats(): Promise<GitHubStats> {
   try {
     const res = await fetch('https://api.github.com/users/firasmosbehi/repos?per_page=100&sort=updated', {
       next: { revalidate: 3600 }, // Revalidate every hour
+      // Unauthenticated calls share a 60 req/h limit per IP
+      headers: process.env.GITHUB_TOKEN ? { Authorization: `Bearer ${process.env.GITHUB_TOKEN}` } : undefined,
     });
 
     if (!res.ok) {
@@ -66,7 +68,12 @@ async function fetchGitHubStats(): Promise<GitHubStats> {
       recentRepos,
       languages,
     };
-  } catch {
+  } catch (err) {
+    // At runtime, throw so ISR keeps serving the last good page instead of caching the
+    // empty state for the whole revalidate window. Build and dev fall back to the empty state.
+    if (process.env.NODE_ENV === 'production' && process.env.NEXT_PHASE !== 'phase-production-build') {
+      throw err;
+    }
     return {
       totalRepos: 0,
       totalStars: 0,
@@ -170,7 +177,7 @@ export default async function GitHubActivity() {
                           )}
                         </div>
                         <div className="flex items-center gap-3 font-mono text-xs text-muted flex-shrink-0">
-                          <span aria-label={`${repo.stars} stars`}>★ {repo.stars}</span>
+                          <span><span aria-hidden="true">★ </span>{repo.stars}<span className="sr-only"> stars</span></span>
                           <span>updated {formatDate(repo.updatedAt)}</span>
                         </div>
                       </div>
