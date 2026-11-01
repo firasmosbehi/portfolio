@@ -5,6 +5,16 @@ import AnimatedSection from './AnimatedSection';
 import FadeInStagger from './FadeInStagger';
 import GlassCard from './GlassCard';
 
+const field =
+  'w-full h-12 px-4 rounded-lg bg-bg border border-line text-fg placeholder:text-muted focus:border-accent transition-colors';
+const label = 'block font-mono text-xs text-muted mb-2';
+
+const links = [
+  { label: 'email', value: 'firas.mosbehi@insat.ucar.tn', href: 'mailto:firas.mosbehi@insat.ucar.tn' },
+  { label: 'github', value: 'github.com/firasmosbehi', href: 'https://github.com/firasmosbehi' },
+  { label: 'linkedin', value: 'linkedin.com/in/firasmosbehi', href: 'https://linkedin.com/in/firasmosbehi' },
+];
+
 type FormStatus = 'idle' | 'submitting' | 'success' | 'error';
 
 export default function Contact() {
@@ -52,117 +62,58 @@ export default function Contact() {
   };
 
   return (
-    <AnimatedSection className="w-full min-h-screen flex items-center justify-center py-20 px-4 sm:px-6" id="contact">
-      <div className="w-full max-w-5xl mx-auto">
+    <AnimatedSection className="w-full py-20 sm:py-28" id="contact">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <FadeInStagger delay={100}>
-          <div className="text-center mb-8 sm:mb-12">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-zinc-900 dark:text-zinc-100 mb-4">
-              Get in Touch
-            </h2>
-            <p className="text-base sm:text-lg text-zinc-600 dark:text-zinc-400 max-w-2xl mx-auto">
-              I&apos;m always interested in hearing about new opportunities, collaborations, and
-              interesting DevSecOps challenges.
-            </p>
-          </div>
+          <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight">
+            <span className="font-mono text-sm font-medium text-accent mr-3.5 align-middle">10</span>Get in Touch
+          </h1>
+          <p className="mt-3 text-muted max-w-2xl leading-relaxed">
+            I&apos;m always interested in hearing about new opportunities, collaborations, and
+            interesting DevSecOps challenges.
+          </p>
         </FadeInStagger>
 
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
-          {/* Contact info sidebar */}
+        <div className="mt-12 grid grid-cols-1 lg:grid-cols-5 gap-10 lg:gap-12">
+          {/* Contact info */}
           <FadeInStagger delay={200} className="lg:col-span-2">
-            <div className="space-y-4">
-              <GlassCard className="p-5" hover={false}>
-                <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 rounded-lg bg-blue-100/70 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center flex-shrink-0">
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                    </svg>
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-zinc-900 dark:text-zinc-100">Email</h3>
+            <ul className="border-t border-line font-mono text-sm">
+              {links.map((link) => {
+                const external = link.href.startsWith('http');
+                return (
+                  <li key={link.label} className="border-b border-line">
                     <a
-                      href="mailto:firas.mosbehi@insat.ucar.tn"
-                      className="text-sm text-zinc-600 dark:text-zinc-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors break-all"
+                      href={link.href}
+                      {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                      className="flex items-baseline gap-4 py-4 hover:text-accent transition-colors"
                     >
-                      firas.mosbehi@insat.ucar.tn
+                      <span className="w-20 shrink-0 text-muted">{link.label}</span>
+                      <span className="break-all">{link.value}</span>
                     </a>
-                  </div>
-                </div>
-              </GlassCard>
-
-              <GlassCard className="p-5" hover={false}>
-                <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 rounded-lg bg-blue-100/70 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center flex-shrink-0">
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                    </svg>
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-zinc-900 dark:text-zinc-100">Location</h3>
-                    <p className="text-sm text-zinc-600 dark:text-zinc-400">Saint Etienne, France</p>
-                  </div>
-                </div>
-              </GlassCard>
-
-              <GlassCard className="p-5" hover={false}>
-                <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 rounded-lg bg-blue-100/70 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center flex-shrink-0">
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
-                    </svg>
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-zinc-900 dark:text-zinc-100">Social</h3>
-                    <div className="flex gap-3 mt-2">
-                      <a
-                        href="https://github.com/firasmosbehi"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-zinc-600 dark:text-zinc-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                        aria-label="GitHub"
-                      >
-                        <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                          <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
-                        </svg>
-                      </a>
-                      <a
-                        href="https://linkedin.com/in/firasmosbehi"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-zinc-600 dark:text-zinc-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                        aria-label="LinkedIn"
-                      >
-                        <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                          <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
-                        </svg>
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              </GlassCard>
-            </div>
+                  </li>
+                );
+              })}
+              <li className="flex items-baseline gap-4 py-4 border-b border-line">
+                <span className="w-20 shrink-0 text-muted">location</span>
+                <span>Saint Etienne, France</span>
+              </li>
+            </ul>
           </FadeInStagger>
 
           {/* Contact form */}
           <FadeInStagger delay={300} className="lg:col-span-3">
             <GlassCard className="p-6 sm:p-8" hover={false}>
               {status === 'success' ? (
-                <div className="text-center py-10">
-                  <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
-                    <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
-                  </div>
-                  <h3 className="text-xl font-bold text-zinc-900 dark:text-zinc-100 mb-2">
-                    Message Sent!
-                  </h3>
-                  <p className="text-zinc-600 dark:text-zinc-400 mb-6">
+                <div className="py-6" role="status">
+                  <p className="font-mono text-xs text-accent">status: sent</p>
+                  <h2 className="mt-3 text-xl font-semibold tracking-tight">Message Sent!</h2>
+                  <p className="mt-2 text-muted leading-relaxed">
                     Thank you for reaching out. I&apos;ll get back to you as soon as possible.
                   </p>
                   <button
                     type="button"
                     onClick={() => setStatus('idle')}
-                    className="px-6 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                    className="mt-6 inline-flex items-center h-12 px-5 rounded-lg border border-line font-medium hover:border-muted transition-colors"
                   >
                     Send Another Message
                   </button>
@@ -183,10 +134,7 @@ export default function Contact() {
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                     <div>
-                      <label
-                        htmlFor="name"
-                        className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1.5"
-                      >
+                      <label htmlFor="name" className={label}>
                         Name
                       </label>
                       <input
@@ -197,15 +145,13 @@ export default function Contact() {
                         onChange={handleChange}
                         required
                         minLength={2}
-                        className="w-full px-4 py-2.5 rounded-lg bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all"
+                        autoComplete="name"
+                        className={field}
                         placeholder="Your name"
                       />
                     </div>
                     <div>
-                      <label
-                        htmlFor="email"
-                        className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1.5"
-                      >
+                      <label htmlFor="email" className={label}>
                         Email
                       </label>
                       <input
@@ -215,17 +161,15 @@ export default function Contact() {
                         value={formData.email}
                         onChange={handleChange}
                         required
-                        className="w-full px-4 py-2.5 rounded-lg bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all"
+                        autoComplete="email"
+                        className={field}
                         placeholder="you@example.com"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label
-                      htmlFor="subject"
-                      className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1.5"
-                    >
+                    <label htmlFor="subject" className={label}>
                       Subject
                     </label>
                     <select
@@ -234,13 +178,7 @@ export default function Contact() {
                       value={formData.subject}
                       onChange={handleChange}
                       required
-                      className="w-full px-4 py-2.5 rounded-lg bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all appearance-none"
-                      style={{
-                        backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`,
-                        backgroundPosition: 'right 0.75rem center',
-                        backgroundRepeat: 'no-repeat',
-                        backgroundSize: '1.25rem',
-                      }}
+                      className={field}
                     >
                       <option value="" disabled>
                         Select a subject
@@ -253,10 +191,7 @@ export default function Contact() {
                   </div>
 
                   <div>
-                    <label
-                      htmlFor="message"
-                      className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1.5"
-                    >
+                    <label htmlFor="message" className={label}>
                       Message
                     </label>
                     <textarea
@@ -268,24 +203,25 @@ export default function Contact() {
                       minLength={10}
                       maxLength={5000}
                       rows={5}
-                      className="w-full px-4 py-2.5 rounded-lg bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all resize-y"
+                      aria-describedby="message-count"
+                      className={`${field} h-auto min-h-36 py-3 resize-y`}
                       placeholder="Tell me about your project or opportunity..."
                     />
-                    <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-500 text-right">
+                    <p id="message-count" className="mt-1.5 font-mono text-xs text-muted text-right">
                       {formData.message.length}/5000
                     </p>
                   </div>
 
                   {status === 'error' && (
-                    <div className="p-4 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 text-sm">
+                    <p role="alert" className="text-sm text-red-600 dark:text-red-400">
                       {errorMessage}
-                    </div>
+                    </p>
                   )}
 
                   <button
                     type="submit"
                     disabled={status === 'submitting'}
-                    className="w-full sm:w-auto px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-60 disabled:cursor-not-allowed active:scale-95 transition-all font-medium flex items-center justify-center gap-2 touch-manipulation"
+                    className="inline-flex items-center justify-center gap-2 h-12 px-5 rounded-lg bg-fill text-on-fill font-semibold w-full sm:w-auto disabled:opacity-60 disabled:cursor-not-allowed touch-manipulation"
                   >
                     {status === 'submitting' ? (
                       <>
@@ -294,6 +230,7 @@ export default function Contact() {
                           xmlns="http://www.w3.org/2000/svg"
                           fill="none"
                           viewBox="0 0 24 24"
+                          aria-hidden="true"
                         >
                           <circle
                             className="opacity-25"

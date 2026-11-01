@@ -31,7 +31,16 @@ function checkRateLimit(ip: string): boolean {
 }
 
 function sanitize(input: string): string {
-  return input.trim().replace(/[<>]/g, '');
+  return input.trim();
+}
+
+// Entity-encode for the HTML email body (stripping <> mangled legit messages)
+function escapeHtml(input: string): string {
+  return input
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
 }
 
 function isValidEmail(email: string): boolean {
@@ -40,18 +49,22 @@ function isValidEmail(email: string): boolean {
 
 export async function POST(request: NextRequest) {
   try {
-    // Get client IP
+    // Right-most X-Forwarded-For entry is the one our proxy added; the left-most is client-controlled.
+    // ponytail: per-instance in-memory limit; add a Vercel Firewall rule on /api/contact if spam shows up
     const forwardedFor = request.headers.get('x-forwarded-for');
-    const ip = forwardedFor ? forwardedFor.split(',')[0].trim() : 'unknown';
+    const ip = request.headers.get('x-real-ip') ?? forwardedFor?.split(',').pop()?.trim() ?? 'unknown';
 
-    if (ip !== 'unknown' && !checkRateLimit(ip)) {
+    if (!checkRateLimit(ip)) {
       return NextResponse.json(
         { error: 'Too many submissions. Please try again later.' },
         { status: 429 }
       );
     }
 
-    const body = await request.json();
+    const body = await request.json().catch(() => null);
+    if (!body || typeof body !== 'object') {
+      return NextResponse.json({ error: 'Invalid request.' }, { status: 400 });
+    }
     const { name, email, subject, message, honeypot } = body;
 
     // Honeypot check
@@ -60,14 +73,14 @@ export async function POST(request: NextRequest) {
     }
 
     // Validation
-    if (!name || !email || !subject || !message) {
+    if ([name, email, subject, message].some((v) => typeof v !== 'string' || !v)) {
       return NextResponse.json(
         { error: 'All fields are required.' },
         { status: 400 }
       );
     }
 
-    const sanitizedName = sanitize(name);
+    const sanitizedName = sanitize(name).replace(/[\r\n]+/g, ' ');
     const sanitizedEmail = sanitize(email);
     const sanitizedSubject = sanitize(subject);
     const sanitizedMessage = sanitize(message);
@@ -75,6 +88,13 @@ export async function POST(request: NextRequest) {
     if (sanitizedName.length < 2) {
       return NextResponse.json(
         { error: 'Name must be at least 2 characters.' },
+        { status: 400 }
+      );
+    }
+
+    if (sanitizedName.length > 100 || sanitizedEmail.length > 254) {
+      return NextResponse.json(
+        { error: 'Name or email is too long.' },
         { status: 400 }
       );
     }
@@ -126,12 +146,12 @@ export async function POST(request: NextRequest) {
       text: `Name: ${sanitizedName}\nEmail: ${sanitizedEmail}\nSubject: ${sanitizedSubject}\n\nMessage:\n${sanitizedMessage}`,
       html: `
         <h2>New message from portfolio</h2>
-        <p><strong>Name:</strong> ${sanitizedName}</p>
-        <p><strong>Email:</strong> ${sanitizedEmail}</p>
-        <p><strong>Subject:</strong> ${sanitizedSubject}</p>
+        <p><strong>Name:</strong> ${escapeHtml(sanitizedName)}</p>
+        <p><strong>Email:</strong> ${escapeHtml(sanitizedEmail)}</p>
+        <p><strong>Subject:</strong> ${escapeHtml(sanitizedSubject)}</p>
         <hr />
         <p><strong>Message:</strong></p>
-        <p style="white-space: pre-line;">${sanitizedMessage.replace(/\n/g, '<br />')}</p>
+        <p style="white-space: pre-line;">${escapeHtml(sanitizedMessage).replace(/\n/g, '<br />')}</p>
       `,
     });
 

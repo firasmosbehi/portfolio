@@ -30,7 +30,7 @@ export const metadata: Metadata = {
     default: "Firas Mosbehi - DevSecOps Engineer | Kubernetes & AWS Expert",
     template: "%s | Firas Mosbehi - DevSecOps Engineer"
   },
-  description: "DevSecOps Engineer specializing in Kubernetes, AWS, CI/CD pipelines, Infrastructure as Code (Terraform, Ansible), and container orchestration. 2+ years experience in cloud automation and DevOps best practices.",
+  description: "DevSecOps Engineer specializing in Kubernetes, AWS, CI/CD pipelines, Infrastructure as Code (Terraform, Ansible), and container orchestration. 3+ years of experience in cloud automation and DevOps best practices.",
   keywords: [
     "DevSecOps Engineer",
     "DevOps Engineer",
@@ -72,18 +72,13 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Firas Mosbehi - DevSecOps Engineer",
-    description: "DevSecOps Engineer specializing in Kubernetes, AWS, CI/CD, and Infrastructure as Code",
     creator: "@firasmosbahi",
   },
   alternates: {
-    canonical: "https://firasmosbahi.com",
+    canonical: "/",
     types: {
       'application/rss+xml': 'https://firasmosbahi.com/feed.xml',
     },
-  },
-  verification: {
-    google: "google-site-verification-code-here",
   },
   category: "technology",
   icons: {
@@ -121,6 +116,7 @@ export default function RootLayout({
     "jobTitle": "DevSecOps Engineer",
     "description": "DevSecOps Engineer specializing in Kubernetes, AWS, CI/CD pipelines, Infrastructure as Code (Terraform, Ansible), and container orchestration.",
     "url": "https://firasmosbahi.com",
+    "sameAs": ["https://github.com/firasmosbehi", "https://linkedin.com/in/firasmosbehi"],
     "email": "firas.mosbehi@insat.ucar.tn",
     "telephone": "+33776118453",
     "address": {
@@ -159,7 +155,7 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased`}
       >
         <ThemeProvider>
           <CommandPaletteProvider>

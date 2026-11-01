@@ -1,19 +1,5 @@
 import AnimatedSection from './AnimatedSection';
 import FadeInStagger from './FadeInStagger';
-import GlassCard from './GlassCard';
-
-const accentClasses: Record<string, { border: string; text: string; badge: string }> = {
-  blue: {
-    border: 'bg-blue-600 group-hover:bg-blue-500',
-    text: 'text-blue-600 dark:text-blue-400',
-    badge: 'bg-blue-100/70 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300',
-  },
-  cyan: {
-    border: 'bg-cyan-600 group-hover:bg-cyan-500',
-    text: 'text-cyan-600 dark:text-cyan-400',
-    badge: 'bg-cyan-100/70 dark:bg-cyan-900/30 text-cyan-700 dark:text-cyan-300',
-  },
-};
 
 export default function Experience() {
   const experiences = [
@@ -23,7 +9,6 @@ export default function Experience() {
       location: 'Saint-Étienne, France',
       period: '02/2025 – Present',
       duration: 'Current',
-      color: 'blue' as const,
       summary:
         'Leading security-first DevOps initiatives for an AI/QA platform, hardening cloud infrastructure and embedding security gates across the entire SDLC.',
       items: [
@@ -43,7 +28,6 @@ export default function Experience() {
       location: 'Tunisia',
       period: '09/2023 – 11/2024',
       duration: '1 yr 3 mos',
-      color: 'cyan' as const,
       summary:
         'Full-stack DevOps ownership for microservices platforms, delivering automated pipelines and production-grade containerization for client projects.',
       items: [
@@ -59,95 +43,55 @@ export default function Experience() {
   ];
 
   return (
-    <AnimatedSection className="w-full min-h-screen flex items-center justify-center py-20 sm:py-24 px-4 sm:px-6">
-      <div className="w-full max-w-7xl mx-auto">
+    <AnimatedSection className="w-full py-20 sm:py-28">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <FadeInStagger delay={100}>
-          <div className="mb-8 sm:mb-12">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-zinc-900 dark:text-zinc-100">
+          <div className="mb-10 sm:mb-12">
+            <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight">
+              <span className="font-mono text-sm font-medium text-accent mr-3.5 align-middle">02</span>
               Experience
-            </h2>
-            <p className="mt-2 text-zinc-600 dark:text-zinc-400 max-w-2xl">
+            </h1>
+            <p className="mt-3 text-muted max-w-2xl leading-relaxed">
               3+ years of hands-on experience building, securing, and scaling cloud-native
               infrastructure across fast-moving engineering teams.
             </p>
           </div>
         </FadeInStagger>
 
-        <div className="relative">
-          {/* Vertical timeline line */}
-          <div className="absolute left-4 sm:left-6 md:left-8 top-8 bottom-8 w-px bg-gradient-to-b from-blue-600 via-cyan-500 to-transparent hidden md:block" />
-
-          <div className="space-y-8 sm:space-y-12">
-            {experiences.map((exp) => {
-              const accent = accentClasses[exp.color];
-              return (
-                <FadeInStagger key={exp.title} delay={exp.delay}>
-                  <div className="relative md:pl-16 lg:pl-20">
-                    {/* Timeline dot */}
-                    <div
-                      className={`hidden md:flex absolute left-0 md:left-4 lg:left-6 top-6 w-5 h-5 rounded-full border-4 border-white dark:border-zinc-900 ${exp.color === 'blue' ? 'bg-blue-600' : 'bg-cyan-600'} shadow-md z-10`}
-                    />
-
-                    <GlassCard className="p-5 sm:p-7 md:p-8 relative overflow-hidden group">
-                      <div
-                        className={`absolute left-0 top-0 bottom-0 w-1 ${accent.border} transition-colors duration-300`}
-                      />
-                      <div className="pl-4 sm:pl-6">
-                        <div className="flex flex-col md:flex-row md:justify-between md:items-start mb-3 sm:mb-4 gap-2">
-                          <div>
-                            <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-zinc-900 dark:text-zinc-100">
-                              {exp.title}
-                            </h3>
-                            <p className={`text-base sm:text-lg ${accent.text} font-medium`}>
-                              {exp.company}
-                            </p>
-                            <p className="text-sm sm:text-base text-zinc-500 dark:text-zinc-500">
-                              {exp.location}
-                            </p>
-                          </div>
-                          <div className="flex flex-row md:flex-col md:items-end gap-2 md:gap-0">
-                            <span className="text-sm sm:text-base text-zinc-600 dark:text-zinc-400 font-medium">
-                              {exp.period}
-                            </span>
-                            <span
-                              className={`text-xs px-2 py-0.5 rounded-full ${accent.badge} font-medium`}
-                            >
-                              {exp.duration}
-                            </span>
-                          </div>
-                        </div>
-
-                        <p className="text-sm sm:text-base text-zinc-600 dark:text-zinc-400 mb-4 leading-relaxed">
-                          {exp.summary}
-                        </p>
-
-                        <ul className="space-y-2 text-sm sm:text-base text-zinc-600 dark:text-zinc-400 mb-5">
-                          {exp.items.map((item, idx) => (
-                            <li key={idx} className="flex gap-2">
-                              <span className={`${accent.text} mt-1.5 flex-shrink-0`}>•</span>
-                              <span>{item}</span>
-                            </li>
-                          ))}
-                        </ul>
-
-                        <div className="flex flex-wrap gap-2">
-                          {exp.tags.map((tag) => (
-                            <span
-                              key={tag}
-                              className={`px-2.5 py-1 rounded-full text-xs font-medium ${accent.badge}`}
-                            >
-                              {tag}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                    </GlassCard>
+        <ol className="border-t border-line">
+          {experiences.map((exp) => (
+            <li key={exp.title} className="border-b border-line">
+              <FadeInStagger delay={exp.delay}>
+                <article className="flex flex-col md:flex-row gap-3 md:gap-10 py-8">
+                  <div className="md:w-52 shrink-0 font-mono text-[13px] leading-relaxed text-muted">
+                    <div>{exp.period}</div>
+                    <div>{exp.location}</div>
+                    <div>{exp.duration}</div>
                   </div>
-                </FadeInStagger>
-              );
-            })}
-          </div>
-        </div>
+                  <div className="min-w-0 flex-1">
+                    <h2 className="text-xl font-semibold">
+                      {exp.title} <span className="font-normal text-muted">at</span> {exp.company}
+                    </h2>
+                    <p className="mt-2.5 text-[15px] leading-relaxed text-muted max-w-3xl">
+                      {exp.summary}
+                    </p>
+                    <ul className="mt-4 space-y-2 text-[15px] leading-relaxed text-muted max-w-3xl">
+                      {exp.items.map((item) => (
+                        <li key={item} className="flex gap-3">
+                          <span aria-hidden="true" className="font-mono text-accent shrink-0">–</span>
+                          <span>{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+                    <p className="mt-4 font-mono text-xs text-muted">
+                      {exp.tags.map((t) => t.toLowerCase()).join(' / ')}
+                    </p>
+                  </div>
+                </article>
+              </FadeInStagger>
+            </li>
+          ))}
+        </ol>
       </div>
     </AnimatedSection>
   );

@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useRef, useState, useCallback } from 'react';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useTheme } from './ThemeProvider';
 
@@ -11,7 +10,6 @@ interface CommandItem {
   subtitle?: string;
   icon: React.ReactNode;
   action: () => void;
-  href?: string;
 }
 
 interface CommandPaletteProps {
@@ -266,6 +264,8 @@ export default function CommandPalette({ isOpen, onClose }: CommandPaletteProps)
 
   if (!isOpen) return null;
 
+  const kbd = 'font-mono text-[11px] px-1.5 py-0.5 rounded border border-line text-muted';
+
   return (
     <div
       className="fixed inset-0 z-[100] flex items-start justify-center pt-[15vh] px-4"
@@ -275,110 +275,88 @@ export default function CommandPalette({ isOpen, onClose }: CommandPaletteProps)
     >
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-black/40 dark:bg-black/60 backdrop-blur-sm transition-opacity"
+        className="absolute inset-0 bg-bg/80 transition-opacity"
         onClick={onClose}
         aria-hidden="true"
       />
 
       {/* Modal */}
-      <div className="relative w-full max-w-2xl bg-white/90 dark:bg-zinc-900/90 backdrop-blur-xl rounded-2xl shadow-2xl border border-zinc-200/50 dark:border-zinc-700/50 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+      <div className="relative w-full max-w-2xl bg-surface border border-line rounded-xl overflow-hidden">
         {/* Search input */}
-        <div className="flex items-center gap-3 px-4 py-4 border-b border-zinc-200 dark:border-zinc-800">
-          <svg
-            className="w-5 h-5 text-zinc-400"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-            />
-          </svg>
+        <div className="flex items-center gap-3 px-4 py-4 border-b border-line">
+          <span className="font-mono text-accent" aria-hidden="true">&gt;</span>
           <input
             ref={inputRef}
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Type a command or search..."
-            className="flex-1 bg-transparent text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 outline-none text-base"
+            className="flex-1 bg-transparent text-fg placeholder:text-muted outline-none text-base"
+            role="combobox"
             aria-label="Search commands"
+            aria-expanded="true"
+            aria-controls="command-palette-list"
+            aria-autocomplete="list"
+            aria-activedescendant={
+              filteredCommands[selectedIndex] ? `cmd-${filteredCommands[selectedIndex].id}` : undefined
+            }
           />
-          <kbd className="hidden sm:inline-flex items-center px-2 py-1 rounded bg-zinc-100 dark:bg-zinc-800 text-xs text-zinc-500 dark:text-zinc-400 border border-zinc-200 dark:border-zinc-700">
-            ESC
-          </kbd>
+          <kbd className={`hidden sm:inline-flex ${kbd}`}>esc</kbd>
         </div>
 
         {/* Results list */}
         <ul
           ref={listRef}
+          id="command-palette-list"
           className="max-h-[50vh] overflow-y-auto py-2"
           role="listbox"
+          aria-label="Commands"
         >
           {filteredCommands.length === 0 ? (
-            <li className="px-4 py-8 text-center text-zinc-500 dark:text-zinc-400">
-              No commands found for &quot;{query}&quot;
+            <li className="px-4 py-8 text-center font-mono text-sm text-muted">
+              no commands found for &quot;{query}&quot;
             </li>
           ) : (
             filteredCommands.map((cmd, index) => {
               const isSelected = index === selectedIndex;
               const content = (
                 <div className="flex items-center gap-3 px-4 py-3">
+                  <span
+                    className={`w-3 font-mono text-sm text-accent ${isSelected ? '' : 'invisible'}`}
+                    aria-hidden="true"
+                  >
+                    ›
+                  </span>
                   <div
-                    className={`w-9 h-9 rounded-lg flex items-center justify-center transition-colors ${
-                      isSelected
-                        ? 'bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400'
-                        : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400'
+                    className={`w-9 h-9 rounded-lg border border-line flex items-center justify-center transition-colors ${
+                      isSelected ? 'text-accent' : 'text-muted'
                     }`}
                   >
                     {cmd.icon}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div
-                      className={`font-medium truncate ${
-                        isSelected
-                          ? 'text-zinc-900 dark:text-zinc-100'
-                          : 'text-zinc-700 dark:text-zinc-300'
-                      }`}
-                    >
+                    <div className={`font-medium truncate ${isSelected ? 'text-fg' : 'text-muted'}`}>
                       {cmd.title}
                     </div>
                     {cmd.subtitle && (
-                      <div className="text-xs text-zinc-500 dark:text-zinc-500 truncate">
-                        {cmd.subtitle}
-                      </div>
+                      <div className="font-mono text-xs text-muted truncate">{cmd.subtitle}</div>
                     )}
                   </div>
-                  {isSelected && (
-                    <kbd className="text-[10px] px-1.5 py-0.5 rounded bg-zinc-200 dark:bg-zinc-700 text-zinc-500 dark:text-zinc-400">
-                      ↵
-                    </kbd>
-                  )}
+                  {isSelected && <kbd className={kbd}>↵</kbd>}
                 </div>
               );
 
               return (
                 <li
                   key={cmd.id}
+                  id={`cmd-${cmd.id}`}
                   role="option"
                   aria-selected={isSelected}
-                  className={`cursor-pointer transition-colors ${
-                    isSelected
-                      ? 'bg-blue-50/80 dark:bg-blue-950/30'
-                      : 'hover:bg-zinc-50 dark:hover:bg-zinc-800/50'
-                  }`}
+                  className={`cursor-pointer transition-colors ${isSelected ? 'bg-bg text-fg' : ''}`}
                   onClick={() => cmd.action()}
                   onMouseEnter={() => setSelectedIndex(index)}
                 >
-                  {cmd.href ? (
-                    <Link href={cmd.href} className="block" onClick={() => cmd.action()}>
-                      {content}
-                    </Link>
-                  ) : (
-                    <button className="w-full text-left">{content}</button>
-                  )}
+                  {content}
                 </li>
               );
             })
@@ -386,16 +364,16 @@ export default function CommandPalette({ isOpen, onClose }: CommandPaletteProps)
         </ul>
 
         {/* Footer */}
-        <div className="hidden sm:flex items-center justify-between px-4 py-2.5 border-t border-zinc-200 dark:border-zinc-800 text-xs text-zinc-500 dark:text-zinc-500 bg-zinc-50/50 dark:bg-zinc-900/50">
+        <div className="hidden sm:flex items-center justify-between px-4 py-2.5 border-t border-line font-mono text-xs text-muted">
           <div className="flex items-center gap-4">
             <span className="flex items-center gap-1">
-              <kbd className="px-1.5 py-0.5 rounded bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700">↑</kbd>
-              <kbd className="px-1.5 py-0.5 rounded bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700">↓</kbd>
-              <span>to navigate</span>
+              <kbd className={kbd}>↑</kbd>
+              <kbd className={kbd}>↓</kbd>
+              <span>navigate</span>
             </span>
             <span className="flex items-center gap-1">
-              <kbd className="px-1.5 py-0.5 rounded bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700">↵</kbd>
-              <span>to select</span>
+              <kbd className={kbd}>↵</kbd>
+              <span>select</span>
             </span>
           </div>
           <span>{filteredCommands.length} commands</span>

@@ -1,123 +1,79 @@
 import Link from 'next/link';
-import AnimatedSection from './AnimatedSection';
-import FadeInStagger from './FadeInStagger';
-import GlassCard from './GlassCard';
-import TypewriterText from './TypewriterText';
-import ParticleCanvas from './ParticleCanvas';
-import AnimatedAvatar from './AnimatedAvatar';
 
-const ROLES = [
-  'DevSecOps Engineer',
-  'Kubernetes Expert',
-  'Cloud Infrastructure Architect',
-  'Open Source Contributor',
+const whoami = [
+  ['name', 'Firas Mosbehi'],
+  ['role', 'DevSecOps Engineer'],
+  ['stack', 'k8s · aws · terraform · vault'],
+  ['focus', 'supply-chain security, gitops'],
+  ['status', '● shipping'],
 ];
 
 export default function Hero() {
   return (
-    <AnimatedSection
-      className="relative w-full min-h-screen flex items-center justify-center px-4 sm:px-6 pt-20 overflow-hidden"
+    <section
       id="home"
+      aria-labelledby="hero-title"
+      className="max-w-6xl mx-auto px-4 sm:px-6 pt-16 pb-16 sm:pt-24 sm:pb-20 grid gap-14 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)] items-center"
     >
-      <ParticleCanvas />
-
-      <div className="relative z-10 w-full max-w-7xl mx-auto">
-        <div className="flex flex-col md:flex-row items-center gap-10 md:gap-12 lg:gap-16">
-          <article className="flex-1 text-center md:text-left order-2 md:order-1">
-            <FadeInStagger delay={100}>
-              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-zinc-900 dark:text-zinc-100 mb-4">
-                Hi, I&apos;m{' '}
-                <span className="bg-linear-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
-                  Firas Mosbehi
-                </span>
-              </h1>
-            </FadeInStagger>
-            <FadeInStagger delay={300}>
-              <p
-                className="text-xl sm:text-2xl md:text-3xl text-zinc-700 dark:text-zinc-300 mb-6 min-h-[1.5em]"
-                role="doc-subtitle"
-              >
-                <TypewriterText
-                  words={ROLES}
-                  className="font-medium"
-                  cursorClassName="text-blue-600 dark:text-cyan-400"
-                />
-              </p>
-            </FadeInStagger>
-            <FadeInStagger delay={500}>
-              <p className="text-base sm:text-lg text-zinc-600 dark:text-zinc-400 mb-8 leading-relaxed max-w-2xl mx-auto md:mx-0">
-                Based in Saint Etienne, France. Specializing in automating deployment pipelines,
-                managing cloud infrastructure, and implementing CI/CD solutions.
-              </p>
-            </FadeInStagger>
-            <FadeInStagger delay={700}>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
-                <Link
-                  href="/contact"
-                  className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 active:scale-95 hover:scale-105 transition-all duration-300 font-medium shadow-lg hover:shadow-xl text-center touch-manipulation"
-                  aria-label="Get in Touch - Contact Firas Mosbehi"
-                >
-                  Get in Touch
-                </Link>
-                <a
-                  href="/cv.pdf"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="px-6 py-3 border border-zinc-300 dark:border-zinc-700 text-zinc-900 dark:text-zinc-100 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-900 active:scale-95 hover:scale-105 transition-all duration-300 font-medium text-center touch-manipulation"
-                  aria-label="View CV - Download Firas Mosbehi's CV (PDF)"
-                >
-                  View CV
-                </a>
-              </div>
-            </FadeInStagger>
-          </article>
-
-          <div className="flex-1 flex flex-col items-center gap-6 order-1 md:order-2 w-full max-w-sm md:max-w-none">
-            <FadeInStagger delay={400} className="w-full">
-              <AnimatedAvatar />
-            </FadeInStagger>
-
-            <FadeInStagger delay={600} className="w-full hidden md:block">
-              <GlassCard className="p-5 lg:p-6" hover>
-                <div className="grid grid-cols-4 gap-3 text-center">
-                  <div>
-                    <div className="text-xl lg:text-2xl font-bold text-blue-600 dark:text-blue-400 mb-0.5">
-                      3+
-                    </div>
-                    <div className="text-[10px] sm:text-xs text-zinc-600 dark:text-zinc-400">
-                      Years
-                    </div>
-                  </div>
-                  <div>
-                    <div className="text-xl lg:text-2xl font-bold text-cyan-600 dark:text-cyan-400 mb-0.5">
-                      30+
-                    </div>
-                    <div className="text-[10px] sm:text-xs text-zinc-600 dark:text-zinc-400">
-                      Projects
-                    </div>
-                  </div>
-                  <div>
-                    <div className="text-xl lg:text-2xl font-bold text-blue-600 dark:text-blue-400 mb-0.5">
-                      99.9%
-                    </div>
-                    <div className="text-[10px] sm:text-xs text-zinc-600 dark:text-zinc-400">
-                      Uptime
-                    </div>
-                  </div>
-                  <div>
-                    <div className="text-xl lg:text-2xl font-bold text-cyan-600 dark:text-cyan-400 mb-0.5">
-                      60%
-                    </div>
-                    <div className="text-[10px] sm:text-xs text-zinc-600 dark:text-zinc-400">
-                      Faster
-                    </div>
-                  </div>
-                </div>
-              </GlassCard>
-            </FadeInStagger>
-          </div>
+      <div className="min-w-0">
+        <p className="mb-7 font-mono text-[13px] text-muted flex items-center gap-2.5">
+          <span aria-hidden="true" className="w-2 h-2 rounded-full bg-accent" />
+          open to new roles · saint-étienne, fr
+        </p>
+        <h1
+          id="hero-title"
+          className="text-[clamp(2.5rem,6vw,4.75rem)] leading-[1.02] tracking-[-0.035em] font-semibold"
+        >
+          I build cloud platforms that ship fast and <span className="text-accent">fail safe</span>.
+        </h1>
+        <p className="mt-7 max-w-xl text-lg leading-relaxed text-muted">
+          DevSecOps engineer at The QA Company. Kubernetes, AWS and Terraform — with security gates
+          wired into every pipeline, not bolted on after.
+        </p>
+        <div className="mt-10 flex flex-wrap gap-3">
+          <Link
+            href="/contact"
+            className="inline-flex items-center gap-2 h-12 px-5 rounded-lg bg-fill text-on-fill font-semibold"
+          >
+            Get in touch <span aria-hidden="true">→</span>
+          </Link>
+          <a
+            href="/cv.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Download CV (PDF)"
+            className="inline-flex items-center h-12 px-5 rounded-lg border border-line font-medium hover:border-muted transition-colors"
+          >
+            Download CV
+          </a>
         </div>
       </div>
-    </AnimatedSection>
+
+      <div
+        role="group"
+        aria-label="Profile summary"
+        className="min-w-0 border border-line rounded-xl bg-surface font-mono text-[13px] leading-[1.9] overflow-hidden"
+      >
+        <div className="flex items-center gap-1.5 px-4 py-3 border-b border-line text-muted">
+          <span aria-hidden="true" className="w-2.5 h-2.5 rounded-full border border-line" />
+          <span aria-hidden="true" className="w-2.5 h-2.5 rounded-full border border-line" />
+          <span aria-hidden="true" className="w-2.5 h-2.5 rounded-full border border-line" />
+          <span className="ml-2 text-xs">~/firas</span>
+        </div>
+        <div className="px-5 pt-4 pb-5">
+          <div>
+            <span className="text-accent">$</span> whoami --verbose
+          </div>
+          <dl className="mt-1.5 grid grid-cols-[6rem_minmax(0,1fr)] gap-x-3">
+            {whoami.map(([k, v]) => (
+              <div key={k} className="contents">
+                <dt className="text-muted">{k}</dt>
+                <dd className={k === 'status' ? 'text-accent' : undefined}>{v}</dd>
+              </div>
+            ))}
+          </dl>
+        </div>
+      </div>
+    </section>
   );
 }

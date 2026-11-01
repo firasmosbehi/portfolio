@@ -1,91 +1,121 @@
 @import "tailwindcss";
 
+/* `dark:` follows the .dark class set by ThemeProvider, not the OS setting */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* "Control Plane" tokens — light is the default, .dark overrides */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg: #f7f7f4;
+  --surface: #ffffff;
+  --line: #e2e2dc;
+  --fg: #111316;
+  --muted: #555b63;
+  --accent: #3d6b0a;
+  --fill: #b4f042;
+  --on-fill: #0b0d10;
   color-scheme: light;
 }
 
 .dark {
-  --background: #0a0a0a;
-  --foreground: #ededed;
+  --bg: #0b0d10;
+  --surface: #111418;
+  --line: #22272e;
+  --fg: #e8eaed;
+  --muted: #9aa3ae;
+  --accent: #b4f042;
+  --fill: #b4f042;
+  --on-fill: #0b0d10;
   color-scheme: dark;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
 }
 
 /* System preference fallback before hydration */
 @media (prefers-color-scheme: dark) {
   :root:not(.light):not(.dark) {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --bg: #0b0d10;
+    --surface: #111418;
+    --line: #22272e;
+    --fg: #e8eaed;
+    --muted: #9aa3ae;
+    --accent: #b4f042;
     color-scheme: dark;
   }
 }
 
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-line: var(--line);
+  --color-fg: var(--fg);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-fill: var(--fill);
+  --color-on-fill: var(--on-fill);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
 * {
-  /* Improve touch scrolling on iOS */
-  -webkit-overflow-scrolling: touch;
-  /* Disable tap highlight on mobile */
   -webkit-tap-highlight-color: transparent;
 }
 
 html {
-  /* Enable smooth scrolling */
   scroll-behavior: smooth;
-  /* Prevent text size adjustment on orientation change */
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
-  /* Prevent overscroll bounce on iOS */
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
   overscroll-behavior-y: none;
-  /* Optimize rendering for mobile */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  /* Improve touch responsiveness */
   touch-action: manipulation;
 }
 
-/* Improve scrolling performance */
+::selection {
+  background: var(--fill);
+  color: var(--on-fill);
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
 @supports (scrollbar-width: thin) {
   * {
     scrollbar-width: thin;
-    scrollbar-color: rgba(155, 155, 155, 0.5) transparent;
+    scrollbar-color: var(--line) transparent;
   }
 }
 
-/* Optimize for mobile devices */
+.page-enter {
+  animation: page-enter 500ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes page-enter {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+
 @media (max-width: 1024px) {
   body {
-    /* Allow natural scrolling on mobile */
     overflow-x: hidden;
-    overflow-y: auto;
   }
 
-  /* Improve tap targets for mobile (minimum 44x44px recommended) */
-  a, button {
+  /* Minimum 44x44px tap targets for nav controls and icon buttons */
+  nav a,
+  nav button,
+  button[aria-label] {
     min-height: 44px;
     min-width: 44px;
   }
-
-  /* Optimize animations on mobile for better performance */
-  * {
-    animation-duration: 0.3s !important;
-    transition-duration: 0.3s !important;
-  }
 }
 
-/* Reduce motion for users who prefer it */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

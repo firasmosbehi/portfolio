@@ -19,20 +19,6 @@ interface GitHubStats {
   languages: Record<string, number>;
 }
 
-const LANGUAGE_COLORS: Record<string, string> = {
-  Go: 'bg-cyan-500',
-  TypeScript: 'bg-blue-500',
-  JavaScript: 'bg-yellow-400',
-  Python: 'bg-emerald-500',
-  Dockerfile: 'bg-sky-600',
-  HCL: 'bg-purple-500',
-  'Go Template': 'bg-pink-500',
-  Dart: 'bg-teal-500',
-  Shell: 'bg-zinc-500',
-  HTML: 'bg-orange-500',
-  CSS: 'bg-indigo-500',
-};
-
 async function fetchGitHubStats(): Promise<GitHubStats> {
   try {
     const res = await fetch('https://api.github.com/users/firasmosbehi/repos?per_page=100&sort=updated', {
@@ -104,74 +90,26 @@ function formatDate(isoString: string): string {
   return `${Math.floor(diffDays / 30)}mo ago`;
 }
 
-function ActivityHeatmap() {
-  // Generate a mock heatmap grid based on recent activity
-  // In a real implementation, this would use commit data
-  const weeks = 16;
-  const days = 7;
-  // Deterministic pseudo-random values based on index (avoids impure Math.random during render)
-  const cells = Array.from({ length: weeks * days }, (_, i) => {
-    const x = Math.sin(i * 12.9898) * 43758.5453;
-    return x - Math.floor(x);
-  });
-
-  return (
-    <div className="w-full overflow-x-auto">
-      <div className="flex gap-[3px] min-w-max">
-        {Array.from({ length: weeks }).map((_, weekIndex) => (
-          <div key={weekIndex} className="flex flex-col gap-[3px]">
-            {Array.from({ length: days }).map((_, dayIndex) => {
-              const intensity = cells[weekIndex * days + dayIndex];
-              let bgClass = 'bg-zinc-100 dark:bg-zinc-800';
-              if (intensity > 0.8) bgClass = 'bg-blue-500 dark:bg-blue-500';
-              else if (intensity > 0.6) bgClass = 'bg-blue-400 dark:bg-blue-400';
-              else if (intensity > 0.4) bgClass = 'bg-blue-300 dark:bg-blue-300';
-              else if (intensity > 0.2) bgClass = 'bg-blue-200 dark:bg-blue-800';
-
-              return (
-                <div
-                  key={dayIndex}
-                  className={`w-3 h-3 rounded-sm ${bgClass}`}
-                  title={`Activity level: ${Math.round(intensity * 100)}%`}
-                />
-              );
-            })}
-          </div>
-        ))}
-      </div>
-      <div className="flex items-center gap-2 mt-2 text-xs text-zinc-500 dark:text-zinc-500">
-        <span>Less</span>
-        <div className="flex gap-[3px]">
-          <div className="w-3 h-3 rounded-sm bg-zinc-100 dark:bg-zinc-800" />
-          <div className="w-3 h-3 rounded-sm bg-blue-200 dark:bg-blue-800" />
-          <div className="w-3 h-3 rounded-sm bg-blue-300 dark:bg-blue-300" />
-          <div className="w-3 h-3 rounded-sm bg-blue-400 dark:bg-blue-400" />
-          <div className="w-3 h-3 rounded-sm bg-blue-500 dark:bg-blue-500" />
-        </div>
-        <span>More</span>
-      </div>
-    </div>
-  );
-}
-
 export default async function GitHubActivity() {
   const stats = await fetchGitHubStats();
 
   const languageEntries = Object.entries(stats.languages)
     .sort((a, b) => b[1] - a[1])
     .slice(0, 6);
+  const maxLang = languageEntries[0]?.[1] || 1;
 
   const hasData = stats.totalRepos > 0;
 
   return (
-    <AnimatedSection className="w-full py-16 sm:py-20 px-4 sm:px-6 bg-zinc-50/50 dark:bg-zinc-950/50">
-      <div className="w-full max-w-7xl mx-auto">
+    <AnimatedSection className="w-full py-20 sm:py-28 border-t border-line">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <FadeInStagger delay={100}>
-          <div className="mb-8 sm:mb-12">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-zinc-900 dark:text-zinc-100">
-              Open Source Activity
+          <div className="mb-10 sm:mb-12">
+            <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight">
+              <span className="font-mono text-sm font-medium text-accent mr-3.5 align-middle">03</span>
+              GitHub activity
             </h2>
-            <p className="mt-2 text-zinc-600 dark:text-zinc-400 max-w-2xl">
+            <p className="mt-3 text-muted max-w-2xl leading-relaxed">
               Live snapshot of my GitHub activity. Always building, shipping, and learning in
               public.
             </p>
@@ -179,122 +117,88 @@ export default async function GitHubActivity() {
         </FadeInStagger>
 
         {!hasData ? (
-          <GlassCard className="p-8 text-center">
-            <p className="text-zinc-600 dark:text-zinc-400">
+          <GlassCard className="p-8 text-center" hover={false}>
+            <p className="text-muted">
               GitHub activity data is temporarily unavailable. Check back soon!
             </p>
           </GlassCard>
         ) : (
           <>
             {/* Stats grid */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 mb-8">
+            <dl className="grid grid-cols-2 md:grid-cols-4 gap-px bg-line border border-line rounded-xl overflow-hidden mb-12">
               {[
-                { label: 'Public Repos', value: stats.totalRepos },
-                { label: 'Total Stars', value: stats.totalStars },
-                { label: 'Total Forks', value: stats.totalForks },
-                { label: 'Top Language', value: languageEntries[0]?.[0] || '—' },
-              ].map((stat, index) => (
-                <FadeInStagger key={stat.label} delay={200 + index * 100}>
-                  <GlassCard className="p-5 text-center" hover>
-                    <div className="text-2xl sm:text-3xl font-bold text-blue-600 dark:text-blue-400 mb-1">
-                      {stat.value}
-                    </div>
-                    <div className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400">
-                      {stat.label}
-                    </div>
-                  </GlassCard>
-                </FadeInStagger>
+                { label: 'Public repos', value: stats.totalRepos },
+                { label: 'Total stars', value: stats.totalStars },
+                { label: 'Total forks', value: stats.totalForks },
+                { label: 'Top language', value: languageEntries[0]?.[0] || '—' },
+              ].map((stat) => (
+                <div key={stat.label} className="bg-bg p-5 sm:p-6">
+                  <dt className="font-mono text-xs text-muted uppercase tracking-wider">{stat.label}</dt>
+                  <dd className="mt-2 text-2xl sm:text-3xl font-semibold tracking-tight tabular-nums">
+                    {stat.value}
+                  </dd>
+                </div>
               ))}
-            </div>
+            </dl>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 lg:gap-12">
               {/* Recent repos */}
               <div className="lg:col-span-2">
-                <FadeInStagger delay={400}>
-                  <h3 className="text-lg sm:text-xl font-bold text-zinc-900 dark:text-zinc-100 mb-4">
-                    Recently Updated Repositories
-                  </h3>
-                </FadeInStagger>
-                <div className="space-y-4">
-                  {stats.recentRepos.map((repo, index) => (
-                    <FadeInStagger key={repo.name} delay={500 + index * 100}>
-                      <GlassCard className="p-4 sm:p-5" hover>
-                        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2">
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2 flex-wrap">
-                              <a
-                                href={repo.url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="font-semibold text-zinc-900 dark:text-zinc-100 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                              >
-                                {repo.name}
-                              </a>
-                              {repo.language && (
-                                <span className="inline-flex items-center gap-1 text-xs text-zinc-500 dark:text-zinc-500">
-                                  <span
-                                    className={`w-2 h-2 rounded-full ${LANGUAGE_COLORS[repo.language] || 'bg-zinc-400'}`}
-                                  />
-                                  {repo.language}
-                                </span>
-                              )}
-                            </div>
-                            {repo.description && (
-                              <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400 line-clamp-2">
-                                {repo.description}
-                              </p>
+                <h3 className="font-mono text-xs text-muted uppercase tracking-wider mb-4">
+                  Recently updated repositories
+                </h3>
+                <ul className="border-t border-line divide-y divide-line">
+                  {stats.recentRepos.map((repo) => (
+                    <li key={repo.name} className="py-4 sm:py-5">
+                      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-baseline gap-3 flex-wrap">
+                            <a
+                              href={repo.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="font-semibold hover:text-accent transition-colors"
+                            >
+                              {repo.name}
+                            </a>
+                            {repo.language && (
+                              <span className="font-mono text-xs text-muted">{repo.language.toLowerCase()}</span>
                             )}
                           </div>
-                          <div className="flex items-center gap-3 text-xs text-zinc-500 dark:text-zinc-500 flex-shrink-0">
-                            <span className="flex items-center gap-1">
-                              <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
-                              </svg>
-                              {repo.stars}
-                            </span>
-                            <span>Updated {formatDate(repo.updatedAt)}</span>
-                          </div>
+                          {repo.description && (
+                            <p className="mt-1 text-sm text-muted line-clamp-2">{repo.description}</p>
+                          )}
                         </div>
-                      </GlassCard>
-                    </FadeInStagger>
+                        <div className="flex items-center gap-3 font-mono text-xs text-muted flex-shrink-0">
+                          <span aria-label={`${repo.stars} stars`}>★ {repo.stars}</span>
+                          <span>updated {formatDate(repo.updatedAt)}</span>
+                        </div>
+                      </div>
+                    </li>
                   ))}
-                </div>
+                </ul>
               </div>
 
-              {/* Languages & heatmap */}
-              <div className="space-y-6">
-                <FadeInStagger delay={400}>
-                  <GlassCard className="p-5 sm:p-6" hover>
-                    <h3 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-zinc-100 mb-4">
-                      Top Languages
-                    </h3>
-                    <div className="space-y-3">
-                      {languageEntries.map(([lang, count]) => (
-                        <div key={lang} className="flex items-center gap-3">
-                          <span
-                            className={`w-3 h-3 rounded-full ${LANGUAGE_COLORS[lang] || 'bg-zinc-400'}`}
-                          />
-                          <span className="flex-1 text-sm text-zinc-700 dark:text-zinc-300">{lang}</span>
-                          <span className="text-xs text-zinc-500 dark:text-zinc-500 tabular-nums">
-                            {count} repos
-                          </span>
+              {/* Languages */}
+              <div className="space-y-10">
+                <div>
+                  <h3 className="font-mono text-xs text-muted uppercase tracking-wider mb-4">
+                    Top languages
+                  </h3>
+                  <ul className="space-y-3">
+                    {languageEntries.map(([lang, count]) => (
+                      <li key={lang}>
+                        <div className="flex items-baseline justify-between text-sm">
+                          <span>{lang}</span>
+                          <span className="font-mono text-xs text-muted tabular-nums">{count} repos</span>
                         </div>
-                      ))}
-                    </div>
-                  </GlassCard>
-                </FadeInStagger>
-
-                <FadeInStagger delay={500}>
-                  <GlassCard className="p-5 sm:p-6" hover>
-                    <h3 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-zinc-100 mb-4">
-                      Activity Heatmap
-                    </h3>
-                    <ActivityHeatmap />
-                    <p className="mt-3 text-xs text-zinc-500 dark:text-zinc-500">
-                      Based on recent push activity across public repositories.
-                    </p>
-                  </GlassCard>
-                </FadeInStagger>
+                        <div className="mt-1.5 h-1 rounded-full bg-line overflow-hidden">
+                          <div className="h-full bg-accent" style={{ width: `${(count / maxLang) * 100}%` }} />
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               </div>
             </div>
           </>
