@@ -1,6 +1,7 @@
 import { MetadataRoute } from 'next'
 import { getAllPosts } from '../lib/blog'
 import { SITE_URL } from '../lib/seo'
+import { caseStudies } from '../lib/case-studies'
 
 const baseUrl = SITE_URL
 
@@ -22,6 +23,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   return [
     ...pages.map((p) => ({ url: `${baseUrl}${p.path}`, changeFrequency: p.changeFrequency, priority: p.priority })),
+    ...caseStudies.map((c) => ({ url: `${baseUrl}/projects/${c.slug}`, changeFrequency: 'monthly' as const, priority: 0.8 })),
     { url: `${baseUrl}/blog`, lastModified: posts[0]?.date, changeFrequency: 'weekly', priority: 0.8 },
     ...posts.map((post) => ({
       url: `${baseUrl}/blog/${post.slug}`,

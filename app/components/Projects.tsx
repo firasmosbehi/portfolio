@@ -1,4 +1,6 @@
+import Link from 'next/link';
 import AnimatedSection from './AnimatedSection';
+import { getCaseStudy } from '../../lib/case-studies';
 import FadeInStagger from './FadeInStagger';
 
 export default function Projects() {
@@ -115,6 +117,14 @@ export default function Projects() {
                 <p className="font-mono text-xs text-muted">
                   {project.tags.map((t) => t.toLowerCase()).join(' / ')}
                 </p>
+                {getCaseStudy(project.github.split('/').pop() ?? '') && (
+                  <Link
+                    href={`/projects/${project.github.split('/').pop()}`}
+                    className="font-mono text-[13px] text-accent hover:underline underline-offset-4"
+                  >
+                    read the case study <span aria-hidden="true">→</span>
+                  </Link>
+                )}
               </article>
             ))}
           </div>

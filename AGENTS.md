@@ -99,11 +99,13 @@ my-portfolio/
 │   ├── education/page.tsx        # Route: /education
 │   ├── experience/page.tsx       # Route: /experience
 │   ├── projects/page.tsx         # Route: /projects
+│   ├── projects/[slug]/          # Case studies (data in lib/case-studies.ts)
 │   ├── skills/page.tsx           # Route: /skills
 │   ├── certifications/, now/, testimonials/   # Routes (testimonials is noindex + unlinked)
 │   └── blog/page.tsx, blog/[slug]/page.tsx    # Blog index + MDX posts
 ├── content/blog/*.mdx            # Blog posts (frontmatter: title, description, date, tags)
 ├── lib/blog.ts                   # Post loading/sorting
+├── lib/case-studies.ts           # Case study content (facts from each repo's README only)
 ├── lib/seo.ts                    # SITE_URL, baseOpenGraph, pageAlternates for route metadata
 ├── public/                       # Static assets
 │   └── cv.pdf                    # Resume/CV download
