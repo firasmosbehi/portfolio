@@ -113,3 +113,29 @@ export function generateOgImage({
     }
   );
 }
+
+// App icon / apple-touch icon: the nav's "FM" mark on the dark ground.
+export function iconImage(px: number) {
+  return new ImageResponse(
+    (
+      <div
+        style={{
+          width: '100%',
+          height: '100%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          background: BG,
+          color: ACCENT,
+          fontFamily: 'monospace',
+          fontWeight: 700,
+          fontSize: px * 0.42,
+          letterSpacing: '-0.02em',
+        }}
+      >
+        FM
+      </div>
+    ),
+    { width: px, height: px }
+  );
+}

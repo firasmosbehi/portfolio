@@ -23,6 +23,10 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 5,
   userScalable: true,
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#f7f7f4" },
+    { media: "(prefers-color-scheme: dark)", color: "#0b0d10" },
+  ],
 };
 
 export const metadata: Metadata = {
@@ -84,11 +88,6 @@ export const metadata: Metadata = {
     google: "dWRISc3-7YweJASb5n2ijKWi2bbmaLQDIOk4hI22_O8",
   },
   category: "technology",
-  icons: {
-    icon: "/favicon.ico",
-    shortcut: "/favicon.ico",
-    apple: "/favicon.ico",
-  },
 };
 
 const themeScript = `
@@ -112,9 +111,9 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const structuredData = {
-    "@context": "https://schema.org",
+  const person = {
     "@type": "Person",
+    "@id": `${SITE_URL}/#person`,
     "name": "Firas Mosbehi",
     "jobTitle": "DevSecOps Engineer",
     "description": "DevSecOps Engineer specializing in Kubernetes, AWS, CI/CD pipelines, Infrastructure as Code (Terraform, Ansible), and container orchestration.",
@@ -145,6 +144,14 @@ export default function RootLayout({
       "@type": "EducationalOrganization",
       "name": "National Institute of Applied Sciences and Technology"
     }
+  };
+
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@graph": [
+      person,
+      { "@type": "WebSite", "@id": `${SITE_URL}/#website`, name: "Firas Mosbehi", url: SITE_URL, publisher: { "@id": `${SITE_URL}/#person` } },
+    ],
   };
 
   return (

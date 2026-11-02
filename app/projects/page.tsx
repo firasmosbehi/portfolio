@@ -1,12 +1,12 @@
 import { Metadata } from 'next';
-import { baseOpenGraph } from '../../lib/seo';
+import { baseOpenGraph, pageAlternates } from '../../lib/seo';
 import Projects from '../components/Projects';
 import PageTransition from '../components/PageTransition';
 
 export const metadata: Metadata = {
   title: 'Projects',
   description: 'Explore Firas Mosbehi\'s DevOps and cloud infrastructure projects including Kubernetes platforms on AWS EKS, automated CI/CD pipelines, Infrastructure as Code implementations with Terraform and Ansible, and containerization solutions.',
-  alternates: { canonical: '/projects' },
+  alternates: pageAlternates('/projects'),
   openGraph: {
     ...baseOpenGraph,
     url: '/projects',

@@ -8,7 +8,7 @@ import FadeInStagger from '../../components/FadeInStagger';
 import PageTransition from '../../components/PageTransition';
 import { mdxComponents } from '../../components/MdxComponents';
 import remarkGfm from 'remark-gfm';
-import { baseOpenGraph, SITE_URL } from '../../../lib/seo';
+import { baseOpenGraph, pageAlternates, SITE_URL } from '../../../lib/seo';
 
 interface BlogPostPageProps {
   params: Promise<{ slug: string }>;
@@ -27,7 +27,7 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
   return {
     title: post.title,
     description: post.description,
-    alternates: { canonical: `/blog/${slug}` },
+    alternates: pageAlternates(`/blog/${slug}`),
     openGraph: {
       ...baseOpenGraph,
       url: `/blog/${slug}`,
@@ -54,8 +54,12 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     headline: post.title,
     description: post.description,
     datePublished: post.date,
+    dateModified: post.date,
     url: `${SITE_URL}/blog/${slug}`,
+    mainEntityOfPage: `${SITE_URL}/blog/${slug}`,
+    image: `${SITE_URL}/blog/${slug}/opengraph-image`,
     author: { '@type': 'Person', name: 'Firas Mosbehi', url: SITE_URL },
+    publisher: { '@type': 'Person', name: 'Firas Mosbehi', url: SITE_URL },
     keywords: post.tags.join(', '),
   };
 

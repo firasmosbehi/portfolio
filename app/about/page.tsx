@@ -1,12 +1,12 @@
 import { Metadata } from 'next';
-import { baseOpenGraph } from '../../lib/seo';
+import { baseOpenGraph, pageAlternates } from '../../lib/seo';
 import About from '../components/About';
 import PageTransition from '../components/PageTransition';
 
 export const metadata: Metadata = {
   title: 'About Me',
   description: 'Learn about Firas Mosbehi, a DevSecOps Engineer with 3+ years of experience in cloud infrastructure, Kubernetes, AWS, CI/CD pipelines, and Infrastructure as Code. Passionate about automation and DevOps best practices.',
-  alternates: { canonical: '/about' },
+  alternates: pageAlternates('/about'),
   openGraph: {
     ...baseOpenGraph,
     url: '/about',

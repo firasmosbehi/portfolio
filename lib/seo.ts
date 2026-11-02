@@ -16,3 +16,9 @@ export const baseOpenGraph = {
   locale: 'en_US',
   siteName: 'Firas Mosbehi Portfolio',
 };
+
+// Child `alternates` replaces the root's, dropping the RSS link; build them with this instead.
+export const pageAlternates = (path: string) => ({
+  canonical: path,
+  types: { 'application/rss+xml': '/feed.xml' },
+});

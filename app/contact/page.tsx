@@ -1,12 +1,12 @@
 import { Metadata } from 'next';
-import { baseOpenGraph } from '../../lib/seo';
+import { baseOpenGraph, pageAlternates } from '../../lib/seo';
 import Contact from '../components/Contact';
 import PageTransition from '../components/PageTransition';
 
 export const metadata: Metadata = {
   title: 'Contact',
   description: 'Get in touch with Firas Mosbehi for DevSecOps opportunities, cloud infrastructure projects, or consulting. Located in Saint Etienne, France. Available for remote work and collaborations.',
-  alternates: { canonical: '/contact' },
+  alternates: pageAlternates('/contact'),
   openGraph: {
     ...baseOpenGraph,
     url: '/contact',
