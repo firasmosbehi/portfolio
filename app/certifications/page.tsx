@@ -1,12 +1,12 @@
 import type { Metadata } from 'next';
-import { baseOpenGraph } from '../../lib/seo';
+import { baseOpenGraph, pageAlternates } from '../../lib/seo';
 import PageTransition from '../components/PageTransition';
 import Certifications from '../components/Certifications';
 
 export const metadata: Metadata = {
   title: 'Certifications',
   description: 'Professional certifications and credentials earned by Firas Mosbehi in DevOps, cloud, and security.',
-  alternates: { canonical: '/certifications' },
+  alternates: pageAlternates('/certifications'),
   openGraph: {
     ...baseOpenGraph,
     url: '/certifications',

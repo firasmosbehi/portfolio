@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { baseOpenGraph } from '../../lib/seo';
+import { baseOpenGraph, pageAlternates } from '../../lib/seo';
 import Link from 'next/link';
 import { getAllPosts } from '../../lib/blog';
 import AnimatedSection from '../components/AnimatedSection';
@@ -9,7 +9,7 @@ import PageTransition from '../components/PageTransition';
 export const metadata: Metadata = {
   title: 'Blog',
   description: 'Technical articles by Firas Mosbehi on DevSecOps, Kubernetes, cloud infrastructure, and developer tools.',
-  alternates: { canonical: '/blog' },
+  alternates: pageAlternates('/blog'),
   openGraph: {
     ...baseOpenGraph,
     url: '/blog',

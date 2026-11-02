@@ -68,6 +68,10 @@ my-portfolio/
 │   ├── feed.xml/route.ts         # RSS feed
 │   ├── api/contact/route.ts      # Contact form POST → Resend (needs RESEND_API_KEY)
 │   ├── opengraph-image.tsx       # OG images (per route too, via components/OgImage.tsx)
+│   ├── icon.tsx, apple-icon.tsx  # App icons (FM mark, rendered by iconImage in OgImage.tsx)
+│   ├── manifest.ts               # Web app manifest
+│   ├── not-found.tsx, error.tsx  # Styled 404 and error boundary
+│   ├── .well-known/security.txt/ # RFC 9116 security contact (Expires rolls forward each deploy)
 │   ├── components/               # Shared React components (all co-located here)
 │   │   ├── Hero.tsx              # Landing hero section
 │   │   ├── About.tsx             # About me section
@@ -100,7 +104,7 @@ my-portfolio/
 │   └── blog/page.tsx, blog/[slug]/page.tsx    # Blog index + MDX posts
 ├── content/blog/*.mdx            # Blog posts (frontmatter: title, description, date, tags)
 ├── lib/blog.ts                   # Post loading/sorting
-├── lib/seo.ts                    # SITE_URL + baseOpenGraph for route metadata
+├── lib/seo.ts                    # SITE_URL, baseOpenGraph, pageAlternates for route metadata
 ├── public/                       # Static assets
 │   └── cv.pdf                    # Resume/CV download
 └── ...config files
@@ -172,7 +176,7 @@ Each route is a thin server component that exports `metadata` (with `alternates.
 
 - Every route exports a `Metadata` object with `title`, `description`, and OpenGraph tags.
 - `layout.tsx` contains comprehensive root metadata: default title template, keywords, robots, canonical URL, Twitter card and the Google Search Console `verification.google` tag (property: https://mosbehi.firas.im).
-- **Structured Data**: A JSON-LD `Person` schema is injected into `<head>` in `layout.tsx`.
+- **Structured Data**: `layout.tsx` injects a JSON-LD `@graph` with `Person` and `WebSite`; blog posts add `BlogPosting`.
 - **`app/sitemap.ts`** dynamically generates a sitemap at `/sitemap.xml`.
 - **`app/robots.ts`** allows all crawlers and points to the sitemap.
 
@@ -210,7 +214,7 @@ The site is heavily optimized for mobile devices:
 ## When Making Changes
 
 - Keep components in `app/components/` unless they are route-specific.
-- Export `Metadata` from every new route page, including `alternates: { canonical: '/route' }` and `openGraph: { ...baseOpenGraph, url: '/route' }` (child metadata replaces, not merges, the root values).
+- Export `Metadata` from every new route page, including `alternates: pageAlternates('/route')` (canonical + RSS link) and `openGraph: { ...baseOpenGraph, url: '/route' }`. Child metadata replaces, not merges, the root values.
 - Wrap route content in `PageTransition` to maintain consistent enter animations.
 - Use `AnimatedSection` and `FadeInStagger` for scroll-reveal effects.
 - Add new top-level routes to `Navigation.tsx` (`allLinks`, and `primaryLinks` if it belongs in the desktop bar), the command palette, and the footer if relevant.
