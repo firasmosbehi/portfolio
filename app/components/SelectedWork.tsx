@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { getCaseStudy } from '../../lib/case-studies';
 
 const projects = [
   {
@@ -38,22 +39,21 @@ export default function SelectedWork() {
       <ul className="grid sm:grid-cols-2 gap-px bg-line border border-line rounded-xl overflow-hidden">
         {projects.map((p, i) => (
           <li key={p.name} className="bg-bg hover:bg-surface transition-colors">
-            <a
-              href={`https://github.com/firasmosbehi/${p.name}`}
-              target="_blank"
-              rel="noopener noreferrer"
+            <Link
+              href={getCaseStudy(p.name) ? `/projects/${p.name}` : `https://github.com/firasmosbehi/${p.name}`}
+              {...(getCaseStudy(p.name) ? {} : { target: '_blank', rel: 'noopener noreferrer' })}
               className="group p-7 flex flex-col gap-3.5 h-full min-h-56"
             >
               <span aria-hidden="true" className="flex justify-between font-mono text-xs text-muted">
                 <span>{String(i + 1).padStart(2, '0')}</span>
-                <span>github ↗</span>
+                <span>{getCaseStudy(p.name) ? 'case study →' : 'github ↗'}</span>
               </span>
               <span className="text-[22px] font-semibold tracking-tight group-hover:text-accent transition-colors">
                 {p.name}
               </span>
               <span className="text-[15px] leading-relaxed text-muted grow">{p.desc}</span>
               <span className="font-mono text-xs text-muted">{p.tags}</span>
-            </a>
+            </Link>
           </li>
         ))}
       </ul>
